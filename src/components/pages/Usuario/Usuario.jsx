@@ -1,23 +1,16 @@
 import Swal from "sweetalert2/dist/sweetalert2.all.js";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  Table,
-  Modal,
-  Button,
-  Pagination,
-  Slider,
-  Progress,
-  InputNumber,
-} from "rsuite";
+import { Table, Modal, Button, Pagination } from "rsuite";
 import "rsuite/dist/rsuite.css";
 import { FormControl } from "react-bootstrap";
+import Select from "react-select";
 
 const Usuario = () => {
   const API_Services = import.meta.env.VITE_APP_MY_API;
   const token = localStorage.getItem("access_token");
   const [usuarios, setUsuarios] = useState([]);
-
+  const [filterTarea, setFilterTarea] = useState([]);
   const { Column, HeaderCell, Cell } = Table;
   const [sortColumn, setSortColumn] = useState();
   const [sortType, setSortType] = useState();
@@ -31,6 +24,14 @@ const Usuario = () => {
     setOpen(true);
   };
   const handleClose = () => setOpen(false);
+  const [selectedRol, setSelectedRol] = useState([]);
+  const [seleccionadoRol, setSeleccionadoRol] = useState([]);
+  const [form, setform] = useState({
+    name: "",
+    username: "",
+    email: "",
+    password: "",
+  });
 
   const getData = () => {
     if (sortColumn && sortType) {
@@ -81,14 +82,83 @@ const Usuario = () => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         const data = await response.json();
-        console.log(data);
+        // console.log(data);
         setUsuarios(data);
+        setFilterTarea(data);
+
+        const response1 = await fetch(`${API_Services}/api/CRUD/ConsultarRol`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data1 = await response1.json();
+        // console.log(data1);
+
+        setSelectedRol(data1);
       } catch (error) {
         console.log(error);
       }
     };
     Api_Fetch();
   }, [API_Services, token]);
+
+  const handleFilter = (e) => {
+    const searchValue = e.target.value.toLowerCase();
+    const newData = filterTarea.filter(
+      (item) =>
+        item.nombreApellido.toLowerCase().includes(searchValue) ||
+        item.nombreUsuario.toLowerCase().includes(searchValue) ||
+        item.email.toLowerCase().includes(searchValue)
+    );
+    setUsuarios(newData);
+    if (searchValue === "") {
+      setUsuarios(filterTarea);
+    }
+  };
+
+  const optsSede = selectedRol.map((item) => ({
+    value: item.idRol,
+    label: item.nombreRol,
+  }));
+
+  const handleSelectedSede = (item) => {
+    setSeleccionadoRol(item);
+  };
+
+  const saveUser = async () => {
+    // debugger
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token},`,
+      },
+      body: JSON.stringify({
+        name: form.name,
+        username: form.username,
+        email: form.email,
+        password: form.password,
+        rol: seleccionadoRol.value,
+      }),
+    };
+    try {
+      const response = await fetch(
+        `${API_Services}/api/register`,
+        requestOptions
+      );
+      const data = await response.json();
+      // console.log(data);
+      setUsuarios([...usuarios, data]);
+      Swal.fire({
+        icon: "success",
+        title: "Usuario guardado",
+        text: "Usuario registrado correctamente",
+      }).then(() => {
+        handleClose();  
+      });
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
 
   return (
     <div className="container">
@@ -100,22 +170,22 @@ const Usuario = () => {
           <div className="tab-contentAct card shadow">
             <div className="d-flex mb-3 justify-content-between  ">
               <div className="">
-                <Link
-                  to="/createTarea"
+                <button
+                  onClick={() => handleOpen("lg")}
                   className="btn btnCrea btn-success text-decoration-none"
                   style={{ width: "100%" }}
                 >
-                  Registrar Tarea
-                </Link>
+                  Registrar Usuario
+                </button>
               </div>
 
               <div className="">
                 <FormControl
                   type="search"
-                  placeholder="Buscar Tarea"
+                  placeholder="Buscar Usuario"
                   className="inpuBuscar"
                   style={{ width: "100%" }}
-                  //   onChange={handleFilter}
+                  onChange={handleFilter}
                 />
               </div>
             </div>
@@ -147,21 +217,33 @@ const Usuario = () => {
                 <Cell dataKey="nombreApellido" />
               </Column>
 
-              <Column width={150} sortable resizable align="center">
+              <Column width={250} sortable resizable align="center">
                 <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
                   NOMBRE USUARIO
                 </HeaderCell>
                 <Cell dataKey="nombreUsuario" />
               </Column>
 
-              <Column width={280} sortable resizable align="center">
+              <Column width={250} sortable resizable align="center">
                 <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
-                  CORREO ELECTRONICO
+                  CORREO ELECTRÓNICO
                 </HeaderCell>
                 <Cell dataKey="email" />
               </Column>
 
-              <Column width={200} fixed="right" align="center">
+              <Column width={250} sortable resizable align="center">
+                <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
+                  ROl
+                </HeaderCell>
+                {/* <Cell dataKey="idRol" /> */}
+                <Cell>
+                  {(rowData) => (
+                    <span>{rowData.idRol === 1 ? "ADMIN" : "USUARIO"}</span>
+                  )}
+                </Cell>
+              </Column>
+
+              <Column width={230} fixed="right" align="center">
                 <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
                   ACCIONES
                 </HeaderCell>
@@ -169,14 +251,6 @@ const Usuario = () => {
                   {(rowData) => (
                     <td>
                       <Button
-                        // onClick={() => {
-                        //   handleOpen("lg");
-                        //   avances(`${rowData.ID}`);
-                        //   setSelectedIdSubProyectos(rowData.ID_SUBPROYECTO);
-                        //   setSelectedIdTarea(rowData.ID);
-                        //   setNombreTarea(rowData.NOMBRE);
-                        //   setDatosAvance(rowData.AVANCE);
-                        // }}
                         size="sm"
                         color="cyan"
                         disabled={rowData.TOTAL_SUBTAREAS > 0}
@@ -250,6 +324,122 @@ const Usuario = () => {
                 onChangeLimit={handleChangeLimit}
               />
             </div>
+
+            {/* MODAL ADD USER */}
+            <Modal
+              backdrop="static"
+              keyboard={false}
+              size={size}
+              open={open}
+              onClose={handleClose}
+            >
+              <Modal.Header>
+                <h5 className="text-center">Agregar nuevo usuario</h5>
+              </Modal.Header>
+              <Modal.Body>
+                <div className="container border p-3 mb-4">
+                  <div className="row">
+                    <div className="col-md-6">
+                      <div className="form-outline mb-5">
+                        <label className="form-label h5">Nombre completo</label>
+                        <input
+                          type="text"
+                          placeholder="name"
+                          className="form-control"
+                          value={form.name}
+                          onChange={(e) => {
+                            setform({ ...form, name: e.target.value });
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6">
+                      <div className="form-outline mb-5">
+                        <label className="form-label h5">Nombre Usuario</label>
+                        <input
+                          type="text"
+                          placeholder="username"
+                          className="form-control"
+                          value={form.username}
+                          onChange={(e) => {
+                            setform({ ...form, username: e.target.value });
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="col-md-6">
+                      <div className="form-outline mb-5">
+                        <label className="form-label h5">
+                          Correo Electronico
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="email"
+                          className="form-control"
+                          value={form.email}
+                          onChange={(e) => {
+                            setform({ ...form, email: e.target.value });
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="col-md-6">
+                      <div className="form-outline mb-5">
+                        <label className="form-label h5">
+                          Contraseñá
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="password"
+                          className="form-control"
+                          value={form.password}
+                          onChange={(e) => {
+                            setform({ ...form, password: e.target.value });
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="col-md-6">
+                      <div className="form-outline mb-5">
+                        <label className="form-label h5">
+                          Selecionar un ROl
+                        </label>
+                        <Select
+                          options={optsSede}
+                          value={seleccionadoRol}
+                          onChange={handleSelectedSede}
+                          placeholder="Selecciona un tipo"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Modal.Body>
+
+              <Modal.Footer>
+                <div className="d-flex justify-content-center">
+                  <Button
+                    onClick={() => {
+                      saveUser();
+                    }}
+                    color="green"
+                    appearance="primary"
+                  >
+                    Registrar
+                  </Button>
+                  <Button
+                    onClick={handleClose}
+                    color="red"
+                    appearance="primary"
+                  >
+                    Cerrar
+                  </Button>
+                </div>
+              </Modal.Footer>
+            </Modal>
           </div>
         </div>
       </div>

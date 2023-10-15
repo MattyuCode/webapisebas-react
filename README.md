@@ -6,7 +6,7 @@
    npm install serve
 ```
 
-* y Agregar esto 
+* y Agregar esto package json
 ```json
  "start": "serve dist"
 ```
