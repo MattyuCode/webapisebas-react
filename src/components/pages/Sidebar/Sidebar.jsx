@@ -1,9 +1,10 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import profileImg from "../../../assets/usuario.png";
 
 export const Sidebar = ({ show, setShow }) => {
-  const [isActive, setIsActive] = useState("/");
+  const [isActive, setIsActive] = useState("/home");
   const navigate = useNavigate();
 
   const handleClickPath = (path) => {
@@ -20,40 +21,56 @@ export const Sidebar = ({ show, setShow }) => {
   return (
     // <main className={show ? 'space-toggle' : null}>
     <>
-      <header className={`header ${show ? "space-toggle" : null} `}>
+      <header
+        className={`header ${show ? "space-toggle" : null} `}
+        style={{ zIndex: "5" }}
+      >
         <div className="header-toogle" onClick={() => setShow(!show)}>
           <i className="fas fa-bars "></i>
         </div>
 
-        <Link to="/" style={{ color: "white" }}>
-          <i className="fas fa-sign-out-alt nav-link-icon"></i>{" "}
-          <span className="nav-link-name">Logout</span>
-        </Link>
+        <div className="divTexto">
+          <div
+            onClick={logout}
+            style={{ color: "white" }}
+            className="link-logout"
+          >
+            <i className="fas fa-sign-out-alt nav-link-icon"></i>{" "}
+            <span className="nav-link-name"></span>
+          </div>
+
+          <span style={{ margin: "0 30px 0" }}>
+            {localStorage.getItem("USERS")}{" "}
+          </span>
+          <div className="user">
+            <img className="profiel-img" src={profileImg} alt="" />
+          </div>
+        </div>
       </header>
 
-      <aside className={`sidebar ${show ? "show" : null}`}>
+      <aside
+        className={`sidebar ${show ? "show" : "hidden"}`}
+        style={{ zIndex: "6" }}
+      >
         <nav className="navbars">
           <div className="">
-            {/* <Link to="/" className="nav-link nav-logo"> */}
-            <Link
-              to="/dashboard"
-              className={`nav-logo ${
-                isActive === "/dashboard" ? "active" : ""
-              }`}
-              onClick={() => handleClickPath("/dashboard")}
-            >
-              <i className="fas fa-tachometer-alt  nav-logo-icon "></i>
-              <span className="nav-link-name">Dashaboard</span>
-            </Link>
-
-            <div className="nav-list">
+            <div className="nav-list " style={{ paddingTop: " 50px" }}>
               {/* <Link to="/home" className="nav-links active"> */}
+              <Link
+                to="/home"
+                className={`nav-links ${isActive === "/home" ? "active" : ""}`}
+                onClick={() => handleClickPath("/home")}
+              >
+                <i className="fas fa-home nav-link-icon"></i>
+                <span className="nav-link-name">INICIO</span>
+              </Link>
+
               <Link
                 to="/user"
                 className={`nav-links ${isActive === "/user" ? "active" : ""}`}
                 onClick={() => handleClickPath("/user")}
               >
-                <i className="fas fa-user nav-link-icon"></i>
+                <i className="fas fa-users nav-link-icon"></i>
                 <span className="nav-link-name">USUARIO</span>
               </Link>
 
@@ -63,19 +80,39 @@ export const Sidebar = ({ show, setShow }) => {
                 onClick={() => handleClickPath("/roles")}
               >
                 <i className="fas fa-user-tag nav-link-icon"></i>
-                
+
                 <span className="nav-link-name">ROLES</span>
               </Link>
 
               <Link
-                to="/proyecto"
+                to="/personas"
                 className={`nav-links ${
-                  isActive === "/proyecto" ? "active" : ""
+                  isActive === "/personas" ? "active" : ""
                 }`}
-                onClick={() => handleClickPath("/proyecto")}
+                onClick={() => handleClickPath("/personas")}
               >
-                <i className="fas fa-project-diagram nav-link-icon"></i>
-                <span className="nav-link-name">Protectos</span>
+                <i className="fas fa-user-check nav-link-icon"></i>
+                <span className="nav-link-name">PERSONAS</span>
+              </Link>
+
+              <Link
+                to="/asistencia"
+                className={`nav-links ${
+                  isActive === "/asistencia" ? "active" : ""
+                }`}
+                onClick={() => handleClickPath("/asistencia")}
+              >
+                <i className="fas fa-clipboard-list nav-link-icon"></i>
+                <span className="nav-link-name">ASISTENCIA</span>
+              </Link>
+
+              <Link
+                to="/pagos"
+                className={`nav-links ${isActive === "/pagos" ? "active" : ""}`}
+                onClick={() => handleClickPath("/pagos")}
+              >
+                <i className="fas fa-money-bill-wave nav-link-icon"></i>
+                <span className="nav-link-name">PAGOS</span>
               </Link>
             </div>
           </div>

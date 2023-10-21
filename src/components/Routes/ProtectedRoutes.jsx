@@ -9,7 +9,7 @@ export const ProtectedRoutes = () => {
   const isLoggedIn = localStorage.getItem("access_token");
 
   if (!isLoggedIn) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/home" replace />;
   }
 
   return (

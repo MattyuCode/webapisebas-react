@@ -1,254 +1,217 @@
-import Swal from "sweetalert2/dist/sweetalert2.all.js";
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import {
-  Table,
-  Modal,
-  Button,
-  Pagination,
-  Slider,
-  Progress,
-  InputNumber,
-} from "rsuite";
-import "rsuite/dist/rsuite.css";
+import React, { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 import { FormControl } from "react-bootstrap";
 
 const Roles = () => {
-    const API_Services = import.meta.env.VITE_APP_MY_API;
-    const token = localStorage.getItem("access_token");
-    const [usuarios, setUsuarios] = useState([]);
-  
-    const { Column, HeaderCell, Cell } = Table;
-    const [sortColumn, setSortColumn] = useState();
-    const [sortType, setSortType] = useState();
-    const [loading, setLoading] = useState(false);
-    const [limit, setLimit] = useState(10);
-    const [page, setPage] = useState(1);
-    const [open, setOpen] = useState(false);
-    const [size, setSize] = useState(false);
-    const handleOpen = (value) => {
-      setSize(value);
-      setOpen(true);
+  const API_Services = import.meta.env.VITE_APP_MY_API;
+  const token = localStorage.getItem("access_token");
+  const [rol, setRol] = useState([]);
+  const [filterRole, setFilterRole] = useState([]);
+  const [idEditar, setIdEditar] = useState("");
+  const [form, setForm] = useState({
+    nombre_rol: "",
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`${API_Services}/api/CRUD/ConsultarRol`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          // console.log(data);
+          setRol(data);
+          setFilterRole(data);
+        } else {
+          console.error("Ocurrió un error al consultar los roles.");
+        }
+      } catch (error) {
+        console.error(error);
+      }
     };
-    const handleClose = () => setOpen(false);
-  
-    const getData = () => {
-      if (sortColumn && sortType) {
-        return usuarios.sort((a, b) => {
-          let x = a[sortColumn];
-          let y = b[sortColumn];
-          if (typeof x === "string") {
-            x = x.charCodeAt();
-          }
-          if (typeof y === "string") {
-            y = y.charCodeAt();
-          }
-          if (sortType === "asc") {
-            return x - y;
-          } else {
-            return y - x;
-          }
+    fetchData();
+  }, [API_Services, token]);
+
+  const saveRole = async (e) => {
+    e.preventDefault();
+    try {
+      const resquestOptions = {
+        // method: "POST",
+        method: idEditar ? "PUT" : "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          nombreRol: form.nombre_rol,
+        }),
+      };
+
+      // const response = await fetch(
+      //   `${API_Services}/api/CRUD/CrearRol`,
+      //   resquestOptions
+      // );
+
+      const urls = idEditar
+        ? `${API_Services}/api/CRUD/CrearRol`
+        : `${API_Services}/api/CRUD/ModificarRol`;
+      const response = await fetch(urls, resquestOptions);
+      if (response.ok) {
+        const data = await response.json();
+        Swal.fire({
+          icon: "success",
+          title: idEditar ? "Rol Actualizado" : "Rol guardado",
+          text: "Rol registrado correctamente",
+        });
+        console.log(data);
+
+        if (idEditar) {
+          setRol((row) =>
+            row.map((item) =>
+              item.idRol === idEditar
+                ? { ...item, nombreRol: form.nombreRol }
+                : item
+            )
+          );
+          setIdEditar("");
+        } else {
+          // Actualizar la lista de roles después de agregar uno nuevo
+          setRol((prevRol) => [...prevRol, data]); // Agregar el nuevo rol a la lista
+        }
+        setForm({ nombre_rol: "" }); // Limpiar el formulario después de agregar
+      } else {
+        console.error("Ocurrió un error al guardar el rol.");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const deleteRol = async (idRol) => {
+    //  debugger
+    try {
+      const requestOptions = {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      };
+      const response = await fetch(
+        `${API_Services}/api/CRUD/EliminarRol/${idRol}`,
+        requestOptions
+      );
+      if (response.ok) {
+        const data = await response.json();
+        // console.log(data);
+        setRol(rol.filter((item) => item.idRol !== idRol));
+        Swal.fire({
+          icon: "success",
+          title: `${data.message}`,
+          text: "Rol eliminado exitosamente",
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Ocurrió un error al eliminar.",
         });
       }
-      return usuarios;
-    };
-  
-    const handleSortColumn = (sortColumn, sortType) => {
-      setLoading(true);
-      setTimeout(() => {
-        setLoading(false);
-        setSortColumn(sortColumn);
-        setSortType(sortType);
-      }, 500);
-    };
-  
-    const listUsuarios = getData().filter((v, i) => {
-      const start = limit * (page - 1);
-      const end = start + limit;
-      return i >= start && i <= end;
-    });
-  
-    const handleChangeLimit = (dataKey) => {
-      setPage(1);
-      setLimit(dataKey);
-    };
-  
-    useEffect(() => {
-      const Api_Fetch = async () => {
-        try {
-          const response = await fetch(
-            `${API_Services}/api/CRUD/ConsultarRol`,
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
-          const data = await response.json();
-          console.log(data);
-          setUsuarios(data);
-        } catch (error) {
-          console.log(error);
-        }
-      };
-      Api_Fetch();
-    }, [API_Services, token]);
-  
-    return (
-      <div className="container">
-        <div className="row">
-          <div className="col-md-12">
-            <span className="titless text-center">Roles </span>
-          </div>
-          <div className="col-md-12 mb-5">
-            <div className="tab-contentAct card shadow">
-              <div className="d-flex mb-3 justify-content-between  ">
-                <div className="">
-                  <Link
-                    to="/createTarea"
-                    className="btn btnCrea btn-success text-decoration-none"
-                    style={{ width: "100%" }}
-                  >
-                    Registrar Tarea
-                  </Link>
-                </div>
-  
-                <div className="">
-                  <FormControl
-                    type="search"
-                    placeholder="Buscar Tarea"
-                    className="inpuBuscar"
-                    style={{ width: "100%" }}
-                    //   onChange={handleFilter}
-                  />
-                </div>
-              </div>
-  
-              <Table
-                appearance={"primary"}
-                height={400}
-                data={listUsuarios}
-                sortColumn={sortColumn}
-                sortType={sortType}
-                onSortColumn={handleSortColumn}
-                loading={loading}
-                bordered
-                renderEmpty={() => {
-                  return (
-                    <div className="rs-table-body-info">
-                      No hay registros para mostrar{" "}
-                    </div>
-                  );
-                }}
-                autoHeight
-                affixHeader
-                affixHorizontalScrollbar
-              >
-                <Column width={250} sortable resizable>
-                  <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
-                    ID ROL
-                  </HeaderCell>
-                  <Cell dataKey="idRol" />
-                </Column>
-  
-                <Column width={150} sortable resizable align="center">
-                  <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
-                    NOMBRE ROL
-                  </HeaderCell>
-                  <Cell dataKey="nombreRol" />
-                </Column>
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
-  
-                <Column width={200} fixed="right" align="center">
-                  <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
-                    ACCIONES
-                  </HeaderCell>
-                  <Cell style={{ padding: "6px", textAlign: "center" }}>
-                    {(rowData) => (
-                      <td>
-                        <Button
-                          // onClick={() => {
-                          //   handleOpen("lg");
-                          //   avances(`${rowData.ID}`);
-                          //   setSelectedIdSubProyectos(rowData.ID_SUBPROYECTO);
-                          //   setSelectedIdTarea(rowData.ID);
-                          //   setNombreTarea(rowData.NOMBRE);
-                          //   setDatosAvance(rowData.AVANCE);
-                          // }}
-                          size="sm"
-                          color="cyan"
-                          disabled={rowData.TOTAL_SUBTAREAS > 0}
-                          appearance="primary"
-                        >
-                          Editar
-                        </Button>
-                        {"   | "}
-                        <Button
-                          size="sm"
-                          color="red"
-                          appearance="primary"
-                          onClick={() => {
-                            Swal.fire({
-                              title: "¿Está seguro de eliminar este registro?",
-                              text: "Esta acción no se puede deshacer",
-                              icon: "warning",
-                              showCancelButton: true,
-                              confirmButtonColor: "#28a745",
-                              cancelButtonColor: "#dc3545",
-                              confirmButtonText: "Sí, eliminar",
-                              cancelButtonText: "Cancelar",
-                              reverseButtons: true,
-                            }).then((result) => {
-                              if (result.isConfirmed) {
-                                if (rowData.TOTAL_SUBTAREAS > 0) {
-                                  Swal.fire({
-                                    title: "Error al eliminar",
-                                    text: "El registro no se puede eliminar porque tiene subtareas🗃",
-                                    icon: "error",
-                                  });
-                                } else {
-                                  // deleteTarea(rowData.ID);
-                                }
-                              } else if (
-                                result.dismiss === Swal.DismissReason.cancel
-                              ) {
-                                Swal.fire(
-                                  "Cancelado",
-                                  "El registro está seguro 🗃",
-                                  "error"
-                                );
-                              }
-                            });
-                          }}
-                        >
-                          Eliminar
-                        </Button>
-                      </td>
-                    )}
-                  </Cell>
-                </Column>
-              </Table>
-  
-              <div style={{ padding: 20 }}>
-                <Pagination
-                  prev
-                  next
-                  first
-                  last
-                  ellipsis
-                  boundaryLinks
-                  maxButtons={5}
-                  size="xs"
-                  layout={["total", "-", "limit", "|", "pager", "skip"]}
-                  total={usuarios.length}
-                  limitOptions={[5, 10, 15, 50]}
-                  limit={limit}
-                  activePage={page}
-                  onChangePage={setPage}
-                  onChangeLimit={handleChangeLimit}
+  const handleFilter = (e) => {
+    const searchValue = e.target.value.toLowerCase();
+    const newData = filterRole.filter((item) =>
+      item.nombreRol.toLowerCase().includes(searchValue)
+    );
+    setRol(newData);
+    if (searchValue === "") {
+      setRol(filterRole);
+    }
+  };
+
+  return (
+    <div className="container">
+      <div className="row">
+        <div className="col-md-12">
+          <span className="titless text-center">Roles </span>
+        </div>
+        <div className="col-md-12 mb-5">
+          <div className="tab-contentAct card shadow">
+            <div className="d-flex mb-3 justify-content-end  ">
+              <div className="">
+                <FormControl
+                  type="search"
+                  placeholder="Buscar Rol"
+                  className="inpuBuscar"
+                  style={{ width: "100%" }}
+                  onChange={handleFilter}
                 />
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-md-6">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">ID</th>
+                      <th scope="col">NOmbre ROL</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rol.map((item) => (
+                      <tr key={item.idRol}>
+                        <th scope="row">{item.idRol}</th>
+                        <td>{item.nombreRol}</td>
+                        <i
+                          className="fas fa-edit"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => {
+                            setForm({ nombre_rol: item.nombreRol });
+                            setIdEditar(item.idRol);
+                          }}
+                        ></i>
+                        <i
+                          className="fas fa-trash-alt"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => deleteRol(item.idRol)}
+                        ></i>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="col-md-6">
+                <form onSubmit={saveRole}>
+                  <div className="form-group">
+                    <label htmlFor="exampleInputEmail1">Nombre ROl</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="exampleInputEmail1"
+                      aria-describedby="emailHelp"
+                      value={form.nombre_rol}
+                      onChange={(e) => {
+                        setForm({ ...form, nombre_rol: e.target.value });
+                      }}
+                      placeholder="Nombre rol"
+                      required
+                    />
+                  </div>
+
+                  <button type="submit" className="btn btn-success mt-3 w-100">
+                    {idEditar ? "Actualizar Rol" : "Registrar nuevo Rol"}
+                  </button>
+                </form>
               </div>
             </div>
           </div>
         </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
-export default Roles
+export default Roles;

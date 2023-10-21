@@ -33,7 +33,7 @@ const Login = () => {
     });
     if (response.status !== 403) {
       let data = await response.json();
-      navigate("/user");
+      navigate("/home");
 
       localStorage.setItem("access_token", data["access_token"]);
       localStorage.setItem("USERS", data.user);
