@@ -1,22 +1,23 @@
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
+import { UseContextTypeUser } from "../Context/UseTypeUser";
+ 
 
 const Login = () => {
   const API_Services = import.meta.env.VITE_APP_MY_API;
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     username: "",
     password: "",
     loading: false,
   });
-
-  const navigate = useNavigate();
+  const { setTipoUser } = useContext(UseContextTypeUser);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     fetchData();
   };
 
@@ -35,7 +36,7 @@ const Login = () => {
     if (response.status !== 403) {
       let data = await response.json();
       navigate("/home");
-
+      setTipoUser(form.username);
       localStorage.setItem("access_token", data["access_token"]);
       localStorage.setItem("USERS", data.user);
     } else {
@@ -88,7 +89,7 @@ const Login = () => {
             >
               Iniciar Sesión
             </button>
-          </div> 
+          </div>
         </form>
 
         <ToastContainer />

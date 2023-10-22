@@ -1,11 +1,16 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import profileImg from "../../../assets/usuario.png";
+import { UseContextTypeUser } from "../../Context/UseTypeUser";
 
 export const Sidebar = ({ show, setShow }) => {
   const [isActive, setIsActive] = useState("/home");
+  const [dRole, seIdRole] = useState(null);
+  const token = localStorage.getItem("access_token");
+  const API_Services = import.meta.env.VITE_APP_MY_API;
   const navigate = useNavigate();
+  const { tipoUser } = useContext(UseContextTypeUser);
 
   const handleClickPath = (path) => {
     setIsActive(path);
@@ -17,6 +22,24 @@ export const Sidebar = ({ show, setShow }) => {
     localStorage.removeItem("USERS");
     // window.location.href = "/";
   };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch(
+          `${API_Services}/api/CRUDUSUARIO/ConsultarUsuario`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const data = await response.json();
+        // console.log(data);
+        const result = data.find((item) => item.nombreUsuario === tipoUser);
+        seIdRole(result.idRol);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchUser();
+  }, [API_Services, token, tipoUser]);
 
   return (
     // <main className={show ? 'space-toggle' : null}>
@@ -65,24 +88,32 @@ export const Sidebar = ({ show, setShow }) => {
                 <span className="nav-link-name">INICIO</span>
               </Link>
 
-              <Link
-                to="/user"
-                className={`nav-links ${isActive === "/user" ? "active" : ""}`}
-                onClick={() => handleClickPath("/user")}
-              >
-                <i className="fas fa-users nav-link-icon"></i>
-                <span className="nav-link-name">USUARIO</span>
-              </Link>
+              {dRole === 1 && (
+                <>
+                  <Link
+                    to="/user"
+                    className={`nav-links ${
+                      isActive === "/user" ? "active" : ""
+                    }`}
+                    onClick={() => handleClickPath("/user")}
+                  >
+                    <i className="fas fa-users nav-link-icon"></i>
+                    <span className="nav-link-name">USUARIO</span>
+                  </Link>
 
-              <Link
-                to="/roles"
-                className={`nav-links ${isActive === "/roles" ? "active" : ""}`}
-                onClick={() => handleClickPath("/roles")}
-              >
-                <i className="fas fa-user-tag nav-link-icon"></i>
+                  <Link
+                    to="/roles"
+                    className={`nav-links ${
+                      isActive === "/roles" ? "active" : ""
+                    }`}
+                    onClick={() => handleClickPath("/roles")}
+                  >
+                    <i className="fas fa-user-tag nav-link-icon"></i>
 
-                <span className="nav-link-name">ROLES</span>
-              </Link>
+                    <span className="nav-link-name">ROLES</span>
+                  </Link>
+                </>
+              )}
 
               <Link
                 to="/personas"
