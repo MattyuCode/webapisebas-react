@@ -290,8 +290,6 @@ header {
   padding-left: calc(var(--nav-width) + 1rem);
 }
 
-/NOTE: DEL OTRO ESTILO/
-
 section {
   display: flex;
 }
@@ -371,7 +369,8 @@ section.dark {
   display: flex;
   font-size: 20px;
   flex-direction: column;
-  background: linear-gradient(40deg, #009439, #0068a5) !important;
+  background: linear-gradient(to left, #3a7bd5, #3a6073) !important;
+
 }
 
 .tab-content {

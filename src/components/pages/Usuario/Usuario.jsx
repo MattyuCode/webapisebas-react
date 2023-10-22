@@ -23,6 +23,9 @@ const Usuario = () => {
     setSize(value);
     setOpen(true);
   };
+  const modalSize = ["xs", "sm", "md", "lg", "full"].includes(size)
+    ? size
+    : "lg";
   const handleClose = () => setOpen(false);
   const [selectedRol, setSelectedRol] = useState([]);
   const [seleccionadoRol, setSeleccionadoRol] = useState([]);
@@ -90,8 +93,6 @@ const Usuario = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data1 = await response1.json();
-        // console.log(data1);
-
         setSelectedRol(data1);
       } catch (error) {
         console.log(error);
@@ -134,7 +135,7 @@ const Usuario = () => {
       },
       body: JSON.stringify({
         name: form.name,
-        username: form.username,
+        username: form.username.toUpperCase(),
         email: form.email,
         password: form.password,
         rol: seleccionadoRol.value,
@@ -145,16 +146,22 @@ const Usuario = () => {
         `${API_Services}/api/register`,
         requestOptions
       );
-      const data = await response.json();
-      // console.log(data);
-      setUsuarios([...usuarios, data]);
-      Swal.fire({
-        icon: "success",
-        title: "Usuario guardado",
-        text: "Usuario registrado correctamente",
-      }).then(() => {
-        handleClose();  
-      });
+      if (response.ok) {
+        const data = await response.json();
+        // console.log(data);
+        setUsuarios((prevRol) => [...prevRol, data]);
+        Swal.fire({
+          icon: "success",
+          title: "Usuario guardado",
+          text: "Usuario registrado correctamente",
+        }).then(() => {
+          handleClose();
+          setform({ name: "", username: "", password: "", email: "" });
+          setSeleccionadoRol("")
+        });
+      } else {
+        console.error("Ocurrió un error al guardar el Usuario");
+      }
     } catch (error) {
       console.error(error.message);
     }
@@ -249,7 +256,7 @@ const Usuario = () => {
                 </HeaderCell>
                 <Cell style={{ padding: "6px", textAlign: "center" }}>
                   {(rowData) => (
-                    <td>
+                    <>
                       <Button
                         size="sm"
                         color="cyan"
@@ -299,7 +306,7 @@ const Usuario = () => {
                       >
                         Eliminar
                       </Button>
-                    </td>
+                    </>
                   )}
                 </Cell>
               </Column>
@@ -329,7 +336,7 @@ const Usuario = () => {
             <Modal
               backdrop="static"
               keyboard={false}
-              size={size}
+              size={modalSize}
               open={open}
               onClose={handleClose}
             >
@@ -358,7 +365,7 @@ const Usuario = () => {
                         <label className="form-label h5">Nombre Usuario</label>
                         <input
                           type="text"
-                          placeholder="username"
+                          placeholder="USUARIO EN MAYUSCULA"
                           className="form-control"
                           value={form.username}
                           onChange={(e) => {
@@ -387,9 +394,7 @@ const Usuario = () => {
 
                     <div className="col-md-6">
                       <div className="form-outline mb-5">
-                        <label className="form-label h5">
-                          Contraseñá
-                        </label>
+                        <label className="form-label h5">Contraseñá</label>
                         <input
                           type="text"
                           placeholder="password"

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { FormControl } from "react-bootstrap";
 
@@ -11,6 +11,7 @@ const Roles = () => {
   const [form, setForm] = useState({
     nombre_rol: "",
   });
+  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,12 +34,48 @@ const Roles = () => {
     fetchData();
   }, [API_Services, token]);
 
+  const UpdateRole = async (e) => {
+    e.preventDefault();
+    // debugger;
+    try {
+      const resquestOptions = {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          nombreRol: form.nombre_rol,
+        }),
+      };
+      const response = await fetch(
+        `${API_Services}/api/CRUD/ModificarRol/${idEditar}`,
+        resquestOptions
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setRol((roles) =>
+          roles.map((role) => (role.idRol === idEditar ? data : role))
+        );
+        setIsUpdating(false);
+        setForm({ nombre_rol: "" });
+        Swal.fire("Éxito", "Rol actualizado correctamente", "success");
+      } else {
+        console.error("Ocurrió un error al guardar el rol.");
+        Swal.fire("Error", "Ocurrió un error al actualizar el rol", "error");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const saveRole = async (e) => {
     e.preventDefault();
     try {
       const resquestOptions = {
-        // method: "POST",
-        method: idEditar ? "PUT" : "POST",
+        method: "POST",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -49,48 +86,31 @@ const Roles = () => {
         }),
       };
 
-      // const response = await fetch(
-      //   `${API_Services}/api/CRUD/CrearRol`,
-      //   resquestOptions
-      // );
+      const response = await fetch(
+        `${API_Services}/api/CRUD/CrearRol`,
+        resquestOptions
+      );
 
-      const urls = idEditar
-        ? `${API_Services}/api/CRUD/CrearRol`
-        : `${API_Services}/api/CRUD/ModificarRol`;
-      const response = await fetch(urls, resquestOptions);
       if (response.ok) {
         const data = await response.json();
         Swal.fire({
           icon: "success",
-          title: idEditar ? "Rol Actualizado" : "Rol guardado",
+          title: "Rol guardado",
           text: "Rol registrado correctamente",
         });
-        console.log(data);
-
-        if (idEditar) {
-          setRol((row) =>
-            row.map((item) =>
-              item.idRol === idEditar
-                ? { ...item, nombreRol: form.nombreRol }
-                : item
-            )
-          );
-          setIdEditar("");
-        } else {
-          // Actualizar la lista de roles después de agregar uno nuevo
-          setRol((prevRol) => [...prevRol, data]); // Agregar el nuevo rol a la lista
-        }
-        setForm({ nombre_rol: "" }); // Limpiar el formulario después de agregar
+        //NOTE: Actualizar la lista de roles después de agregar uno nuevo
+        setRol((prevRol) => [...prevRol, data]); //MATT: Agregar el nuevo rol a la lista
+        setForm({ nombre_rol: "" }); //FIXME: Limpiar el formulario después de agregar
       } else {
         console.error("Ocurrió un error al guardar el rol.");
       }
+      setIsUpdating(false);
     } catch (error) {
       console.error(error);
     }
   };
 
   const deleteRol = async (idRol) => {
-    //  debugger
     try {
       const requestOptions = {
         method: "DELETE",
@@ -102,7 +122,6 @@ const Roles = () => {
       );
       if (response.ok) {
         const data = await response.json();
-        // console.log(data);
         setRol(rol.filter((item) => item.idRol !== idRol));
         Swal.fire({
           icon: "success",
@@ -158,38 +177,44 @@ const Roles = () => {
                     <tr>
                       <th scope="col">ID</th>
                       <th scope="col">NOmbre ROL</th>
+                      <th scope="col">Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {rol.map((item) => (
-                      <tr key={item.idRol}>
+                    {rol.map((item, index) => (
+                      <tr key={index}>
                         <th scope="row">{item.idRol}</th>
                         <td>{item.nombreRol}</td>
-                        <i
-                          className="fas fa-edit"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => {
-                            setForm({ nombre_rol: item.nombreRol });
-                            setIdEditar(item.idRol);
-                          }}
-                        ></i>
-                        <i
-                          className="fas fa-trash-alt"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => deleteRol(item.idRol)}
-                        ></i>
+                        <td>
+                          <i
+                            className="fas fa-edit"
+                            style={{ cursor: "pointer", color: "#0a91d3" }}
+                            onClick={() => {
+                              setForm({ nombre_rol: item.nombreRol });
+                              setIdEditar(item.idRol);
+                              setIsUpdating(true);
+                            }}
+                          ></i>
+                        </td>
+                        <td>
+                          <i
+                            className="fas fa-trash-alt"
+                            style={{ cursor: "pointer", color: "red" }}
+                            onClick={() => deleteRol(item.idRol)}
+                          ></i>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
               <div className="col-md-6">
-                <form onSubmit={saveRole}>
+                <form onSubmit={isUpdating ? UpdateRole : saveRole}>
                   <div className="form-group">
                     <label htmlFor="exampleInputEmail1">Nombre ROl</label>
                     <input
                       type="text"
-                      className="form-control"
+                      className={`form-control`}
                       id="exampleInputEmail1"
                       aria-describedby="emailHelp"
                       value={form.nombre_rol}
@@ -202,7 +227,7 @@ const Roles = () => {
                   </div>
 
                   <button type="submit" className="btn btn-success mt-3 w-100">
-                    {idEditar ? "Actualizar Rol" : "Registrar nuevo Rol"}
+                    {isUpdating ? "Actualizar Rol" : "Registrar nuevo Rol"}
                   </button>
                 </form>
               </div>
