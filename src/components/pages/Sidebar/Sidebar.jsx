@@ -32,14 +32,16 @@ export const Sidebar = ({ show, setShow }) => {
         );
         const data = await response.json();
         // console.log(data);
-        const result = data.find((item) => item.nombreUsuario === tipoUser);
+        const result = data.find(
+          (item) => item.nombreUsuario === localStorage.getItem("USERS")
+        );
         seIdRole(result.idRol);
       } catch (error) {
         console.log(error);
       }
     };
     fetchUser();
-  }, [API_Services, token, tipoUser]);
+  }, [API_Services, token]);
 
   return (
     // <main className={show ? 'space-toggle' : null}>
