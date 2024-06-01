@@ -16,7 +16,7 @@
 ```bash
    npm install
 ```
-* despues ejecutar el siguiente comando
+#### despues ejecutar el siguiente comando
 
 ```bash
   npm run dev
