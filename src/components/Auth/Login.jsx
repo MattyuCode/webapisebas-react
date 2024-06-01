@@ -4,7 +4,7 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import { UseContextTypeUser } from "../Context/UseTypeUser";
- 
+import axios from "axios";
 
 const Login = () => {
   const API_Services = import.meta.env.VITE_APP_MY_API;
@@ -22,27 +22,36 @@ const Login = () => {
   };
 
   const fetchData = async () => {
-    const response = await fetch(`${API_Services}/api/authenticate`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: form.username,
-        password: form.password,
-      }),
-    });
-    if (response.status !== 403) {
-      let data = await response.json();
-      navigate("/home");
-      setTipoUser(form.username);
-      localStorage.setItem("access_token", data["access_token"]);
-      localStorage.setItem("USERS", data.user);
-    } else {
-      toast.error("Usuario no encontrado", {
-        theme: "colored",
-      });
+    // debugger;
+    const data = {
+      username: form.username,
+      password: form.password,
+    };
+    try {
+      const response = await axios.post(
+        `${API_Services}/api/authenticate`,
+        data
+      );
+
+      if (response.status === 200) {
+        const data = response.data;
+        console.log(data.access_token);
+        navigate("/home");
+        setTipoUser(form.username);
+        localStorage.setItem("access_token", data.access_token);
+        // localStorage.setItem("USERS", data.user);
+      } else {
+        console.log("Aqui");
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        const data = error.response.data.Message;
+        toast.error(data, {
+          theme: "colored",
+        });
+      } else {
+        console.error(error.response);
+      }
     }
   };
 

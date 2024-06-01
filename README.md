@@ -11,3 +11,13 @@
  "start": "serve dist"
 ```
 
+### Para levantar el proyecto
+
+```bash
+   npm install
+```
+* despues ejecutar el siguiente comando
+
+```bash
+  npm run dev
+```
