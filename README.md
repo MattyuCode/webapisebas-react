@@ -21,3 +21,14 @@
 ```bash
   npm run dev
 ```
+
+### Para instalar YUP
+```bash
+   npm i yup 
+   npm install @hookform/resolvers yup
+```
+
+* Guiarse: https://dev.to/m0nm/form-validation-with-useform-hook-1p33
+
+** link del grdi material 
+### https://mui.com/x/react-data-grid/editing/

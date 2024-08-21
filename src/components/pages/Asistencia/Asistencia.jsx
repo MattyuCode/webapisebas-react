@@ -132,7 +132,7 @@ const Asistencia = () => {
             />
           </div>
 
-          <Modals open={open} size={modalSize} handleClose={handleClose} />
+          <Modals open={open} handleClose={handleClose} />
         </div>
       </div>
     </div>

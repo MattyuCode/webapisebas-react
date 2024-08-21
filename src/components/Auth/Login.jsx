@@ -39,7 +39,7 @@ const Login = () => {
         navigate("/home");
         setTipoUser(form.username);
         localStorage.setItem("access_token", data.access_token);
-        // localStorage.setItem("USERS", data.user);
+        localStorage.setItem("USERS", data.user);
       } else {
         console.log("Aqui");
       }

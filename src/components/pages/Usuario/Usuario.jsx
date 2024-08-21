@@ -1,7 +1,7 @@
 import Swal from "sweetalert2/dist/sweetalert2.all.js";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Table, Modal, Button, Pagination } from "rsuite";
+import { Table, Modal, Button, Pagination, Toggle } from "rsuite";
 import "rsuite/dist/rsuite.css";
 import { FormControl } from "react-bootstrap";
 import Select from "react-select";
@@ -157,7 +157,7 @@ const Usuario = () => {
         }).then(() => {
           handleClose();
           setform({ name: "", username: "", password: "", email: "" });
-          setSeleccionadoRol("")
+          setSeleccionadoRol("");
         });
       } else {
         console.error("Ocurrió un error al guardar el Usuario");
@@ -231,12 +231,32 @@ const Usuario = () => {
                 <Cell dataKey="nombreUsuario" />
               </Column>
 
-              <Column width={250} sortable resizable align="center">
+              <Column width={100} sortable resizable align="center">
                 <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
-                  CORREO ELECTRÓNICO
+                  ACTIVO
                 </HeaderCell>
-                <Cell dataKey="email" />
+                <Cell>
+                  {(rowData) => (
+                    <Toggle
+                      defaultChecked={rowData.isActive}
+                      checked={rowData.isActive}
+                      color={rowData.isActive ? "green" : "red"}
+                      readOnly
+                    />
+                  )}
+
+                  {/* <span>{rowData.isActive  ? "ACTIVO" : "DESACTIVADO"}</span> */}
+                </Cell>
               </Column>
+
+              <Column width={200} sortable resizable align="center">
+                <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
+                  Telefono
+                </HeaderCell>
+                <Cell dataKey="telefono" />
+                
+              </Column>
+
 
               <Column width={250} sortable resizable align="center">
                 <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
