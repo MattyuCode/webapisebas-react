@@ -40,6 +40,7 @@ const Login = () => {
         setTipoUser(form.username);
         localStorage.setItem("access_token", data.access_token);
         localStorage.setItem("USERS", data.user);
+        localStorage.setItem("idUsario", data.idUsuario);
       } else {
         console.log("Aqui");
       }
