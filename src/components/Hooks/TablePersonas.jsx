@@ -1,13 +1,18 @@
 import Swal from "sweetalert2/dist/sweetalert2.all.js";
-
-import React, { useState } from "react";
+import { useContext, useState } from "react";
 import { Button, Pagination, Table } from "rsuite";
+import { ModelContext } from "../Context/ModelContext";
+import { UseMetods } from "../Utilities/UseMetods";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const TablePersonas = ({ data }) => {
   const { Column, HeaderCell, Cell } = Table;
+  const { setUpDatos, setIsEdit } = useContext(ModelContext);
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(1);
   const [sortColumn, setSortColumn] = useState();
+  const { eliminarPersonas } = UseMetods();
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [sortType, setSortType] = useState();
 
@@ -24,6 +29,36 @@ const TablePersonas = ({ data }) => {
       setSortType(sortType);
     }, 500);
   };
+
+  const ActualizarDatos = (data) => {
+    setIsEdit(true);
+    setUpDatos([data]);
+  };
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => eliminarPersonas(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries("GetAllPersonas");
+      Swal.fire({
+        title: "Borrado...!",
+        text: "Persona borrado con exito",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    },
+    onError: (error) => {
+      Swal.fire({
+        title: "Error",
+        // text: ${error.data.message}},
+        html: <h1>${error.data.message}</h1>,
+        icon: "error",
+        // showConfirmButton: false,
+        // timer: 2000,
+      });
+    },
+  });
+
   return (
     <div>
       <Table
@@ -92,7 +127,7 @@ const TablePersonas = ({ data }) => {
                   color="cyan"
                   disabled={rowData.TOTAL_SUBTAREAS > 0}
                   appearance="primary"
-                  onClick={(d)=> console.log(rowData)}
+                  onClick={() => ActualizarDatos(rowData)}
                 >
                   Editar
                 </Button>
@@ -102,6 +137,7 @@ const TablePersonas = ({ data }) => {
                   color="red"
                   appearance="primary"
                   onClick={() => {
+                    // console.log(rowData)
                     Swal.fire({
                       title: "¿Está seguro de eliminar este registro?",
                       text: "Esta acción no se puede deshacer",
@@ -114,15 +150,7 @@ const TablePersonas = ({ data }) => {
                       reverseButtons: true,
                     }).then((result) => {
                       if (result.isConfirmed) {
-                        if (rowData.TOTAL_SUBTAREAS > 0) {
-                          Swal.fire({
-                            title: "Error al eliminar",
-                            text: "El registro no se puede eliminar porque tiene subtareas🗃",
-                            icon: "error",
-                          });
-                        } else {
-                          // deleteTarea(rowData.ID);
-                        }
+                        deleteMutation.mutateAsync(rowData?.idPersona);
                       } else if (result.dismiss === Swal.DismissReason.cancel) {
                         Swal.fire(
                           "Cancelado",

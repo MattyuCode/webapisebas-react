@@ -11,25 +11,28 @@ import Pagos from "./components/pages/Pagos/Pagos";
 import NotFound from "./components/NotFound/NotFound";
 import Home from "./components/pages/Home/Home";
 import { UseTypeUser } from "./components/Context/UseTypeUser";
+import { ModelProvider } from "./components/Context/ModelContext";
 
 function App() {
   return (
     <>
       <MyRoute>
-        <UseTypeUser>
-          <Routes>
-            <Route path="/" element={<Login />} />
-            <Route element={<ProtectedRoutes />}>
-              <Route exact path="/home" element={<Home />} />
-              <Route path="/user" element={<Usuario />} />
-              <Route path="/roles" element={<Roles />} />
-              <Route path="/personas" element={<Personas />} />
-              <Route path="/asistencia" element={<Asistencia />} />
-              <Route path="/pagos" element={<Pagos />} />
-            </Route>
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </UseTypeUser>
+        <ModelProvider>
+          <UseTypeUser>
+            <Routes>
+              <Route path="/" element={<Login />} />
+              <Route element={<ProtectedRoutes />}>
+                <Route exact path="/home" element={<Home />} />
+                <Route path="/user" element={<Usuario />} />
+                <Route path="/roles" element={<Roles />} />
+                <Route path="/personas" element={<Personas />} />
+                <Route path="/asistencia" element={<Asistencia />} />
+                <Route path="/pagos" element={<Pagos />} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </UseTypeUser>
+        </ModelProvider>
       </MyRoute>
     </>
   );

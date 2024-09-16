@@ -1,23 +1,26 @@
-import React, { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import TablePersonas from "../../Hooks/TablePersonas";
 import { useQuery } from "@tanstack/react-query";
-import { Button } from "rsuite";
+// import { Button } from "rsuite";
 import { FormControl } from "react-bootstrap";
 import Modals from "../../Utilities/Modals";
 import { ToastContainer } from "react-toastify";
+import { ModelContext } from "../../Context/ModelContext";
 
 const Personas = () => {
   const API_Services = import.meta.env.VITE_APP_MY_API;
+  const { IsEdit, setIsEdit } = useContext(ModelContext);
   const token = localStorage.getItem("access_token");
   const [open, setOpen] = useState(false);
   const [size, setSize] = useState(false);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setIsEdit(false);
+    setOpen(false);
+  };
   const handleOpen = (value) => {
     setSize(value);
     setOpen(true);
   };
-
-  const jaja  = conte
 
   const abriModal = () => handleOpen("sm");
 
@@ -38,6 +41,12 @@ const Personas = () => {
     queryKey: ["GetAllPersonas"],
     queryFn: GetAllPersonas,
   });
+
+  useEffect(() => {
+    if (IsEdit) {
+      abriModal();
+    }
+  }, [IsEdit]);
 
   return (
     <>

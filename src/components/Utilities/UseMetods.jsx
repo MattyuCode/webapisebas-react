@@ -26,6 +26,46 @@ export const UseMetods = () => {
       throw error.response || error;
     }
   };
+  const modificarPersonas = async (data) => {
+    try {
+      const response = await axios.put(
+        `${API_Services}/api/CRUDPERSONAS/ModificarPersona`,
+        data,
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status == 200) {
+        return response.data;
+      }
+    } catch (error) {
+      throw error.response || error;
+    }
+  };
+  const eliminarPersonas = async (id) => {
+    debugger
+    try {
+      const response = await axios.delete(
+        `${API_Services}/api/CRUDPERSONAS/EliminarPersona/${id}`,
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status == 200) {
+        return response;
+      }
+    } catch (error) {
+      throw error.response || error;
+    }
+  };
 
-  return { postPersonas };
+  return { postPersonas, modificarPersonas, eliminarPersonas };
 };
