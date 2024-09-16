@@ -92,6 +92,7 @@ const TablePersonas = ({ data }) => {
                   color="cyan"
                   disabled={rowData.TOTAL_SUBTAREAS > 0}
                   appearance="primary"
+                  onClick={(d)=> console.log(rowData)}
                 >
                   Editar
                 </Button>

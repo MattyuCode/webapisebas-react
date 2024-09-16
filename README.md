@@ -32,3 +32,12 @@
 
 ** link del grdi material 
 ### https://mui.com/x/react-data-grid/editing/
+
+* para subir todos los archivos
+git add .
+
+* Para nombrar los cambios que se hizo en la rama
+git commit -m "Para nombrar el cambio"
+
+* Para publicar en la rama 
+git push

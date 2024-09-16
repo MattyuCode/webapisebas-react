@@ -16,6 +16,9 @@ const Personas = () => {
     setSize(value);
     setOpen(true);
   };
+
+  const jaja  = conte
+
   const abriModal = () => handleOpen("sm");
 
   const GetAllPersonas = async () => {

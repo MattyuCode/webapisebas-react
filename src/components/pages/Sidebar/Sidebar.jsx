@@ -31,11 +31,9 @@ export const Sidebar = ({ show, setShow }) => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         const data = await response.json();
-        console.log(data);
         const result = data.find(
           (item) => item.nombreUsuario === localStorage.getItem("USERS")
         );
-        console.log(result);
         seIdRole(result.idRol);
       } catch (error) {
         console.log(error);
