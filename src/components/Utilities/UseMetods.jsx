@@ -5,6 +5,19 @@ export const UseMetods = () => {
   const API_Services = import.meta.env.VITE_APP_MY_API;
   const token = localStorage.getItem("access_token");
 
+  const GetAllPersonas = async () => {
+    try {
+      const response = await axios(
+        `${API_Services}/api/CRUDPERSONAS/ConsultarPersonas`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const data = response.data;
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const postPersonas = async (data) => {
     // debugger;
     try {
@@ -47,7 +60,7 @@ export const UseMetods = () => {
     }
   };
   const eliminarPersonas = async (id) => {
-    debugger
+    debugger;
     try {
       const response = await axios.delete(
         `${API_Services}/api/CRUDPERSONAS/EliminarPersona/${id}`,
@@ -67,5 +80,5 @@ export const UseMetods = () => {
     }
   };
 
-  return { postPersonas, modificarPersonas, eliminarPersonas };
+  return { GetAllPersonas, postPersonas, modificarPersonas, eliminarPersonas };
 };

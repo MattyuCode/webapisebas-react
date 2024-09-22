@@ -105,9 +105,9 @@ const Usuario = () => {
     const searchValue = e.target.value.toLowerCase();
     const newData = filterTarea.filter(
       (item) =>
-        item.nombreApellido.toLowerCase().includes(searchValue) ||
-        item.nombreUsuario.toLowerCase().includes(searchValue) ||
-        item.email.toLowerCase().includes(searchValue)
+        item.nombreApellido.toLowerCase().includes(searchValue) 
+        // item.nombreUsuario.toLowerCase().includes(searchValue) ||
+        // item.email.toLowerCase().includes(searchValue)
     );
     setUsuarios(newData);
     if (searchValue === "") {
