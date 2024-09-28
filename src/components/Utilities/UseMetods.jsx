@@ -1,5 +1,4 @@
 import axios from "axios";
-import React from "react";
 
 export const UseMetods = () => {
   const API_Services = import.meta.env.VITE_APP_MY_API;
@@ -7,7 +6,7 @@ export const UseMetods = () => {
 
   const GetAllPersonas = async () => {
     try {
-      const response = await axios(
+      const response = await axios.get(
         `${API_Services}/api/CRUDPERSONAS/ConsultarPersonas`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -60,7 +59,6 @@ export const UseMetods = () => {
     }
   };
   const eliminarPersonas = async (id) => {
-    debugger;
     try {
       const response = await axios.delete(
         `${API_Services}/api/CRUDPERSONAS/EliminarPersona/${id}`,
@@ -80,5 +78,58 @@ export const UseMetods = () => {
     }
   };
 
-  return { GetAllPersonas, postPersonas, modificarPersonas, eliminarPersonas };
+  const GetRol = async () => {
+    try {
+      const response = await axios.get(
+        `${API_Services}/api/CRUD/ConsultarRol`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const data = response.data;
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const GetUser = async () => {
+    try {
+      const response = await axios.get(
+        `${API_Services}/api/CRUDUSUARIO/ConsultarUsuario`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const { Result } = response.data;
+      return Result;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const postUser = async (data) => {
+    // debugger;
+    try {
+      const response = await axios.post(`${API_Services}/api/register`, data, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.status == 200) {
+        return response.data;
+      }
+    } catch (error) {
+      throw error.response || error;
+    }
+  };
+
+  return {
+    postUser,
+    GetUser,
+    GetRol,
+    GetAllPersonas,
+    postPersonas,
+    modificarPersonas,
+    eliminarPersonas,
+  };
 };

@@ -1,54 +1,65 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import PropTypes from "prop-types";
 import { useContext, useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Modal, Button as Boton } from "rsuite";
 import * as yup from "yup";
 import { UseMetods } from "./UseMetods";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-
 import "react-toastify/dist/ReactToastify.css";
 import Select from "react-select";
 import Swal from "sweetalert2";
 import { ModelContext } from "../Context/ModelContext";
 
-const Modals = ({ open, handleClose }) => {
+const ModalsUser = ({ open, handleClose }) => {
   const queryClient = useQueryClient();
-  const { postPersonas, modificarPersonas } = UseMetods();
-  const [sectorSeleccionado, setSectorSelccionado] = useState(null);
+  const { GetRol, postUser } = UseMetods();
   const { upDatos, IsEdit, setIsEdit } = useContext(ModelContext);
   const [size, setSize] = useState(false);
-  const handleSelectSector = (value) => setSectorSelccionado(value);
+  const [selectedRol, setSelectedRol] = useState([]);
+  const handleSelectRol = (value) => setSelectedRol(value);
   const modalSize = ["xs", "sm", "md", "lg", "full"].includes(size)
     ? size
     : "lg";
 
-  const options = [
-    { value: "01", label: "Sector 1" },
-    { value: "02", label: "Sector 2" },
-  ];
+  const { data: allRol } = useQuery({
+    queryKey: ["GetRol"],
+    queryFn: GetRol,
+  });
+
+  const optsRol = allRol?.map((item) => ({
+    value: item.idRol,
+    label: item.nombreRol,
+  }));
 
   const schema = yup.object().shape({
     nombreCompleto: yup.string().required("El nombre completo es requerido!"),
+    nombreUser: yup.string().required("El nombre Usuario es requerido!"),
+    password: yup
+      .string()
+      .required("La contraseña es obligatoria")
+      .min(8, "La contraseña debe tener al menos 8 caracteres")
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+[{\]};:'",<.>/?])(?!.*\s).{8,}$/,
+        "La contraseña debe contener al menos una letra mayúscula, una letra minúscula, un número y un carácter especial"
+      ),
+    confirmPassword: yup
+      .string()
+      .oneOf([yup.ref("password"), null], "Las contraseñas deben coincidir")
+      .required("Debe confirmar la contraseña."),
     telefono: yup
       .string()
       .typeError("Debe ser un número")
       .length(8, "El número de teléfono debe tener exactamente 8 dígitos")
       .required("El teléfono es requerido!"),
-    sector: yup
+    rol: yup
       .object()
       .shape({
-        value: yup.string().required("El sector es requerido!"),
+        value: yup.string().required("El rol es requerido!"),
         label: yup.string().required(),
       })
       .nullable()
       .required("El sector es requerido!"),
-    numDpi: yup
-      .string()
-      .matches(/^\d+$/, "Debe ser un número")
-      .length(13, "El número de DPI debe tener exactamente 13 dígitos")
-      .required("El DPI es requerido!"),
   });
 
   const {
@@ -65,24 +76,24 @@ const Modals = ({ open, handleClose }) => {
     if (IsEdit) {
       setValue("nombreCompleto", upDatos[0].nombreApellido);
       setValue("telefono", upDatos[0].telefono);
-      const sectorEncontrado = options.find(
-        (opt) => Number(opt.value) === upDatos[0].sector
-      );
-      if (sectorEncontrado) {
-        setValue("sector", sectorEncontrado);
-        setSectorSelccionado(sectorEncontrado);
-      }
+      // const sectorEncontrado = options.find(
+      //   (opt) => Number(opt.value) === upDatos[0].sector
+      // );
+      // if (sectorEncontrado) {
+      //   setValue("sector", sectorEncontrado);
+      //   setSectorSelccionado(sectorEncontrado);
+      // }
       setValue("numDpi", upDatos[0].dpi);
     }
   }, [IsEdit, upDatos, setValue]);
 
-  const postPersonasMutation = useMutation({
-    mutationFn: (dataNew) => postPersonas(dataNew),
+  const postUserMutation = useMutation({
+    mutationFn: (dataNew) => postUser(dataNew),
     onSuccess: () => {
-      queryClient.invalidateQueries("GetAllPersonas");
+      queryClient.invalidateQueries("GetUser");
       Swal.fire({
         title: "Registrado..!",
-        text: `Persona registrado`,
+        text: "Usuario registrado correctamente",
         icon: "success",
         showConfirmButton: false,
         timer: 1500,
@@ -98,7 +109,7 @@ const Modals = ({ open, handleClose }) => {
     },
   });
   const updatePersonaMutation = useMutation({
-    mutationFn: (dataNew) => modificarPersonas(dataNew),
+    // mutationFn: (dataNew) => modificarPersonas(dataNew),
     onSuccess: () => {
       queryClient.invalidateQueries("GetAllPersonas");
       Swal.fire({
@@ -121,28 +132,30 @@ const Modals = ({ open, handleClose }) => {
 
   const resetForm = () => {
     reset();
-    setSectorSelccionado(null);
+    // setSectorSelccionado(null);
   };
 
   const onSubmit = (data) => {
     const obj = {
-      nombreApellido: data.nombreCompleto,
+      name: data.nombreCompleto,
+      username: data.nombreUser.toUpperCase(),
       telefono: data.telefono,
-      sector: data.sector.value,
-      idUsuarioRegistro: localStorage.getItem("idUsario"),
-      dpi: data.numDpi,
+      rol: data.rol.label,
+      password: data.password,
     };
-    const update = {
-      idPersona: upDatos[0]?.idPersona,
-      nombreApellido: data.nombreCompleto,
-      telefono: data.telefono,
-      sector: data.sector.value,
-      dpi: data.numDpi,
-    };
+    console.log("🚀 ~ onSubmit ~ obj:", obj);
+    // const update = {
+    //   idPersona: upDatos[0]?.idPersona,
+    //   nombreApellido: data.nombreCompleto,
+    //   telefono: data.telefono,
+    //   sector: data.sector.value,
+    //   dpi: data.numDpi,
+    // };
+    // console.log("🚀 ~ onSubmit ~ IsEdit:", IsEdit);
     if (IsEdit) {
-      updatePersonaMutation.mutateAsync(update);
+      // updatePersonaMutation.mutateAsync(update);
     } else {
-      postPersonasMutation.mutateAsync(obj);
+      postUserMutation.mutateAsync(obj);
     }
   };
 
@@ -156,7 +169,7 @@ const Modals = ({ open, handleClose }) => {
     >
       <Modal.Header>
         <h5 className="text-center">
-          {IsEdit ? "Editar Persona" : "Nueva Persona"}
+          {IsEdit ? "Editar Usuario" : "Nuevo Usuario"}
         </h5>
       </Modal.Header>
 
@@ -185,6 +198,23 @@ const Modals = ({ open, handleClose }) => {
 
                   <div className="col-md-6">
                     <div className="form-outline mb-5">
+                      <label className="form-label h5">Nombre Usuario</label>
+                      <input
+                        type="text"
+                        placeholder="Nombre Usuario"
+                        className="form-control"
+                        {...register("nombreUser")}
+                      />
+                      {errors.nombreUser && (
+                        <p className="text-danger">
+                          {errors.nombreUser.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="col-md-6">
+                    <div className="form-outline mb-5">
                       <label className="form-label h5">Teléfono</label>
                       <input
                         type="number"
@@ -200,27 +230,27 @@ const Modals = ({ open, handleClose }) => {
 
                   <div className="col-md-6">
                     <div className="form-outline mb-5">
-                      <label className="form-label h5">Sector</label>
+                      <label className="form-label h5">ROL</label>
                       <Controller
-                        name="sector"
+                        name="rol"
                         control={control}
                         render={({ field }) => (
                           <Select
                             {...field}
-                            options={options}
-                            placeholder="Selecciona un Sector"
-                            value={sectorSeleccionado}
+                            options={optsRol}
+                            placeholder="Selecciona un Rol"
+                            value={selectedRol}
                             onChange={(value) => {
-                              handleSelectSector(value);
-                              setValue("sector", value);
-                              clearErrors("sector");
+                              handleSelectRol(value);
+                              setValue("rol", value);
+                              clearErrors("rol");
                             }}
                           />
                         )}
                       />
-                      {errors.sector && (
+                      {errors.rol && (
                         <p className="text-danger">
-                          {errors.sector.value?.message}
+                          {errors.rol.value.message}
                         </p>
                       )}
                     </div>
@@ -228,15 +258,34 @@ const Modals = ({ open, handleClose }) => {
 
                   <div className="col-md-6">
                     <div className="form-outline mb-5">
-                      <label className="form-label h5">DPI</label>
+                      <label className="form-label h5">Contraseña</label>
                       <input
-                        type="number"
-                        placeholder="Ingresa número DPI"
+                        type="text"
+                        placeholder="Ingresar contraseña"
                         className="form-control"
-                        {...register("numDpi")}
+                        {...register("password")}
                       />
-                      {errors.numDpi && (
-                        <p className="text-danger">{errors.numDpi.message}</p>
+                      {errors.password && (
+                        <p className="text-danger">{errors.password.message}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="col-md-6">
+                    <div className="form-outline mb-5">
+                      <label className="form-label h5">
+                        Confirmar Contraseña
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Confirmar Contraseña"
+                        className="form-control"
+                        {...register("confirmPassword")}
+                      />
+                      {errors.confirmPassword && (
+                        <p className="text-danger">
+                          {errors.confirmPassword.message}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -261,4 +310,4 @@ const Modals = ({ open, handleClose }) => {
   );
 };
 
-export default Modals;
+export default ModalsUser;

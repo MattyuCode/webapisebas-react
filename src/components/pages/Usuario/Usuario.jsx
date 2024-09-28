@@ -1,16 +1,18 @@
 import Swal from "sweetalert2/dist/sweetalert2.all.js";
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Table, Modal, Button, Pagination, Toggle } from "rsuite";
+import { useContext, useEffect, useState } from "react";
+import { Table, Button, Pagination, Toggle } from "rsuite";
 import "rsuite/dist/rsuite.css";
 import { FormControl } from "react-bootstrap";
-import Select from "react-select";
+import ModalsUser from "../../Utilities/ModalsUser";
+import { ModelContext } from "../../Context/ModelContext";
+import { UseMetods } from "../../Utilities/UseMetods";
+import { useQuery } from "@tanstack/react-query";
 
 const Usuario = () => {
   const API_Services = import.meta.env.VITE_APP_MY_API;
   const token = localStorage.getItem("access_token");
-  const [usuarios, setUsuarios] = useState([]);
   const [filterTarea, setFilterTarea] = useState([]);
+  const { IsEdit, setIsEdit } = useContext(ModelContext);
   const { Column, HeaderCell, Cell } = Table;
   const [sortColumn, setSortColumn] = useState();
   const [sortType, setSortType] = useState();
@@ -19,16 +21,23 @@ const Usuario = () => {
   const [page, setPage] = useState(1);
   const [open, setOpen] = useState(false);
   const [size, setSize] = useState(false);
+  const { GetUser } = UseMetods();
+
+  const { data } = useQuery({
+    queryKey: ["GetUser"],
+    queryFn: GetUser,
+  });
+
   const handleOpen = (value) => {
     setSize(value);
     setOpen(true);
   };
-  const modalSize = ["xs", "sm", "md", "lg", "full"].includes(size)
-    ? size
-    : "lg";
-  const handleClose = () => setOpen(false);
-  const [selectedRol, setSelectedRol] = useState([]);
-  const [seleccionadoRol, setSeleccionadoRol] = useState([]);
+
+  const handleClose = () => {
+    setIsEdit(false);
+    setOpen(false);
+  };
+
   const [form, setform] = useState({
     name: "",
     username: "",
@@ -38,7 +47,7 @@ const Usuario = () => {
 
   const getData = () => {
     if (sortColumn && sortType) {
-      return usuarios.sort((a, b) => {
+      return data?.sort((a, b) => {
         let x = a[sortColumn];
         let y = b[sortColumn];
         if (typeof x === "string") {
@@ -54,7 +63,7 @@ const Usuario = () => {
         }
       });
     }
-    return usuarios;
+    return data;
   };
 
   const handleSortColumn = (sortColumn, sortType) => {
@@ -66,11 +75,13 @@ const Usuario = () => {
     }, 500);
   };
 
-  const listUsuarios = getData().filter((v, i) => {
+  const listUsuarios = getData()?.filter((v, i) => {
+    if (!data) return [];
     const start = limit * (page - 1);
     const end = start + limit;
     return i >= start && i <= end;
   });
+  const abriModal = () => handleOpen("sm");
 
   const handleChangeLimit = (dataKey) => {
     setPage(1);
@@ -78,50 +89,24 @@ const Usuario = () => {
   };
 
   useEffect(() => {
-    const Api_Fetch = async () => {
-      try {
-        const response = await fetch(
-          `${API_Services}/api/CRUDUSUARIO/ConsultarUsuario`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        const data = await response.json();
-        // console.log(data);
-        setUsuarios(data);
-        setFilterTarea(data);
-
-        const response1 = await fetch(`${API_Services}/api/CRUD/ConsultarRol`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data1 = await response1.json();
-        setSelectedRol(data1);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    Api_Fetch();
-  }, [API_Services, token]);
+    if (IsEdit) {
+      abriModal();
+    }
+  }, [IsEdit]);
 
   const handleFilter = (e) => {
     const searchValue = e.target.value.toLowerCase();
-    const newData = filterTarea.filter(
-      (item) =>
-        item.nombreApellido.toLowerCase().includes(searchValue) 
-        // item.nombreUsuario.toLowerCase().includes(searchValue) ||
-        // item.email.toLowerCase().includes(searchValue)
-    );
-    setUsuarios(newData);
-    if (searchValue === "") {
-      setUsuarios(filterTarea);
+    if (data && data.length > 0) {
+      const filteredData = data.filter((item) =>
+        item.nombreApellido.toLowerCase().includes(searchValue)
+      );
+      setFilterTarea(filteredData);
+    } else {
+      setFilterTarea([]);
     }
-  };
-
-  const optsSede = selectedRol.map((item) => ({
-    value: item.idRol,
-    label: item.nombreRol,
-  }));
-
-  const handleSelectedSede = (item) => {
-    setSeleccionadoRol(item);
+    if (searchValue === "") {
+      setFilterTarea(data);
+    }
   };
 
   const saveUser = async () => {
@@ -138,7 +123,7 @@ const Usuario = () => {
         username: form.username.toUpperCase(),
         email: form.email,
         password: form.password,
-        rol: seleccionadoRol.value,
+        // rol: seleccionadoRol.value,
       }),
     };
     try {
@@ -149,7 +134,7 @@ const Usuario = () => {
       if (response.ok) {
         const data = await response.json();
         // console.log(data);
-        setUsuarios((prevRol) => [...prevRol, data]);
+        // setUsuarios((prevRol) => [...prevRol, data]);
         Swal.fire({
           icon: "success",
           title: "Usuario guardado",
@@ -157,7 +142,6 @@ const Usuario = () => {
         }).then(() => {
           handleClose();
           setform({ name: "", username: "", password: "", email: "" });
-          setSeleccionadoRol("");
         });
       } else {
         console.error("Ocurrió un error al guardar el Usuario");
@@ -200,7 +184,7 @@ const Usuario = () => {
             <Table
               appearance={"primary"}
               height={400}
-              data={listUsuarios}
+              data={filterTarea.length > 0 ? filterTarea : listUsuarios}
               sortColumn={sortColumn}
               sortType={sortType}
               onSortColumn={handleSortColumn}
@@ -241,11 +225,8 @@ const Usuario = () => {
                       defaultChecked={rowData.isActive}
                       checked={rowData.isActive}
                       color={rowData.isActive ? "green" : "red"}
-                      readOnly
                     />
                   )}
-
-                  {/* <span>{rowData.isActive  ? "ACTIVO" : "DESACTIVADO"}</span> */}
                 </Cell>
               </Column>
 
@@ -254,9 +235,7 @@ const Usuario = () => {
                   Telefono
                 </HeaderCell>
                 <Cell dataKey="telefono" />
-                
               </Column>
-
 
               <Column width={250} sortable resizable align="center">
                 <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
@@ -265,7 +244,11 @@ const Usuario = () => {
                 {/* <Cell dataKey="idRol" /> */}
                 <Cell>
                   {(rowData) => (
-                    <span>{rowData.idRol === 1 ? "ADMIN" : "USUARIO"}</span>
+                    <span>
+                      {rowData.idRol === "ADMIN"
+                        ? rowData.idRol
+                        : rowData.idRol}
+                    </span>
                   )}
                 </Cell>
               </Column>
@@ -343,7 +326,7 @@ const Usuario = () => {
                 maxButtons={5}
                 size="xs"
                 layout={["total", "-", "limit", "|", "pager", "skip"]}
-                total={usuarios.length}
+                total={data?.length}
                 limitOptions={[5, 10, 15, 50]}
                 limit={limit}
                 activePage={page}
@@ -352,119 +335,7 @@ const Usuario = () => {
               />
             </div>
 
-            {/* MODAL ADD USER */}
-            <Modal
-              backdrop="static"
-              keyboard={false}
-              size={modalSize}
-              open={open}
-              onClose={handleClose}
-            >
-              <Modal.Header>
-                <h5 className="text-center">Agregar nuevo usuario</h5>
-              </Modal.Header>
-              <Modal.Body>
-                <div className="container border p-3 mb-4">
-                  <div className="row">
-                    <div className="col-md-6">
-                      <div className="form-outline mb-5">
-                        <label className="form-label h5">Nombre completo</label>
-                        <input
-                          type="text"
-                          placeholder="name"
-                          className="form-control"
-                          value={form.name}
-                          onChange={(e) => {
-                            setform({ ...form, name: e.target.value });
-                          }}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6">
-                      <div className="form-outline mb-5">
-                        <label className="form-label h5">Nombre Usuario</label>
-                        <input
-                          type="text"
-                          placeholder="USUARIO EN MAYUSCULA"
-                          className="form-control"
-                          value={form.username}
-                          onChange={(e) => {
-                            setform({ ...form, username: e.target.value });
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="col-md-6">
-                      <div className="form-outline mb-5">
-                        <label className="form-label h5">
-                          Correo Electronico
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="email"
-                          className="form-control"
-                          value={form.email}
-                          onChange={(e) => {
-                            setform({ ...form, email: e.target.value });
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="col-md-6">
-                      <div className="form-outline mb-5">
-                        <label className="form-label h5">Contraseñá</label>
-                        <input
-                          type="text"
-                          placeholder="password"
-                          className="form-control"
-                          value={form.password}
-                          onChange={(e) => {
-                            setform({ ...form, password: e.target.value });
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="col-md-6">
-                      <div className="form-outline mb-5">
-                        <label className="form-label h5">
-                          Selecionar un ROl
-                        </label>
-                        <Select
-                          options={optsSede}
-                          value={seleccionadoRol}
-                          onChange={handleSelectedSede}
-                          placeholder="Selecciona un tipo"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Modal.Body>
-
-              <Modal.Footer>
-                <div className="d-flex justify-content-center">
-                  <Button
-                    onClick={() => {
-                      saveUser();
-                    }}
-                    color="green"
-                    appearance="primary"
-                  >
-                    Registrar
-                  </Button>
-                  <Button
-                    onClick={handleClose}
-                    color="red"
-                    appearance="primary"
-                  >
-                    Cerrar
-                  </Button>
-                </div>
-              </Modal.Footer>
-            </Modal>
+            <ModalsUser open={open} handleClose={handleClose} />
           </div>
         </div>
       </div>

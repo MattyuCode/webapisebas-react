@@ -1,16 +1,20 @@
-/* eslint-disable react/prop-types */
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import profileImg from "../../../assets/usuario.png";
-import { UseContextTypeUser } from "../../Context/UseTypeUser";
+import { UseMetods } from "../../Utilities/UseMetods";
+import { useQuery } from "@tanstack/react-query";
 
 export const Sidebar = ({ show, setShow }) => {
   const [isActive, setIsActive] = useState("/home");
   const [dRole, seIdRole] = useState(null);
-  const token = localStorage.getItem("access_token");
-  const API_Services = import.meta.env.VITE_APP_MY_API;
   const navigate = useNavigate();
-  const { tipoUser } = useContext(UseContextTypeUser);
+
+  const { GetUser } = UseMetods();
+
+  const { data, isSuccess } = useQuery({
+    queryKey: ["GetUser"],
+    queryFn: GetUser,
+  });
 
   const handleClickPath = (path) => {
     setIsActive(path);
@@ -24,23 +28,13 @@ export const Sidebar = ({ show, setShow }) => {
   };
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetch(
-          `${API_Services}/api/CRUDUSUARIO/ConsultarUsuario`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        const data = await response.json();
-        const result = data.find(
-          (item) => item.nombreUsuario === localStorage.getItem("USERS")
-        );
-        seIdRole(result.idRol);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchUser();
-  }, [API_Services, token]);
+    if (isSuccess) {
+      const result = data?.find(
+        (item) => item.nombreUsuario === localStorage.getItem("USERS")
+      );
+      seIdRole(result.idRol);
+    }
+  }, [data, isSuccess]);
 
   return (
     // <main className={show ? 'space-toggle' : null}>
@@ -89,7 +83,7 @@ export const Sidebar = ({ show, setShow }) => {
                 <span className="nav-link-name">INICIO</span>
               </Link>
 
-              {dRole === 1 && (
+              {dRole === "ADMIN" && (
                 <>
                   <Link
                     to="/user"
