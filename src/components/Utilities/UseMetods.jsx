@@ -99,6 +99,7 @@ export const UseMetods = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const { Result } = response.data;
+      console.log(Result)
       return Result;
     } catch (error) {
       console.log(error);

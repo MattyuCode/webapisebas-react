@@ -9,11 +9,15 @@ export const Sidebar = ({ show, setShow }) => {
   const [dRole, seIdRole] = useState(null);
   const navigate = useNavigate();
 
-  const { GetUser } = UseMetods();
+  const { GetUser, GetRol } = UseMetods();
 
   const { data, isSuccess } = useQuery({
     queryKey: ["GetUser"],
     queryFn: GetUser,
+  });
+  const { data: datos, isSuccess: SuccesRol } = useQuery({
+    queryKey: ["GetRol"],
+    queryFn: GetRol,
   });
 
   const handleClickPath = (path) => {
@@ -29,10 +33,14 @@ export const Sidebar = ({ show, setShow }) => {
 
   useEffect(() => {
     if (isSuccess) {
+      const rolEncontrado = datos?.find(
+        (d) => d.idRol == localStorage.getItem("idRol")
+      );
       const result = data?.find(
         (item) => item.nombreUsuario === localStorage.getItem("USERS")
       );
-      seIdRole(result.idRol);
+      // seIdRole(result.idRol);
+      seIdRole(rolEncontrado.nombreRol);
     }
   }, [data, isSuccess]);
 

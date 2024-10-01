@@ -140,7 +140,7 @@ const ModalsUser = ({ open, handleClose }) => {
       name: data.nombreCompleto,
       username: data.nombreUser.toUpperCase(),
       telefono: data.telefono,
-      rol: data.rol.label,
+      rol: data.rol.value,
       password: data.password,
     };
     console.log("🚀 ~ onSubmit ~ obj:", obj);

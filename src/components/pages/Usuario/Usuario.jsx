@@ -196,7 +196,7 @@ const Usuario = () => {
                   {(rowData) => (
                     <span>
                       {rowData.idRol === "ADMIN"
-                        ? rowData.idRol
+                        ? "ADMIN"
                         : rowData.idRol}
                     </span>
                   )}
