@@ -9,8 +9,6 @@ import { UseMetods } from "../../Utilities/UseMetods";
 import { useQuery } from "@tanstack/react-query";
 
 const Usuario = () => {
-  const API_Services = import.meta.env.VITE_APP_MY_API;
-  const token = localStorage.getItem("access_token");
   const [filterTarea, setFilterTarea] = useState([]);
   const { IsEdit, setIsEdit } = useContext(ModelContext);
   const { Column, HeaderCell, Cell } = Table;
@@ -37,13 +35,6 @@ const Usuario = () => {
     setIsEdit(false);
     setOpen(false);
   };
-
-  const [form, setform] = useState({
-    name: "",
-    username: "",
-    email: "",
-    password: "",
-  });
 
   const getData = () => {
     if (sortColumn && sortType) {
@@ -109,48 +100,7 @@ const Usuario = () => {
     }
   };
 
-  const saveUser = async () => {
-    // debugger
-    const requestOptions = {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token},`,
-      },
-      body: JSON.stringify({
-        name: form.name,
-        username: form.username.toUpperCase(),
-        email: form.email,
-        password: form.password,
-        // rol: seleccionadoRol.value,
-      }),
-    };
-    try {
-      const response = await fetch(
-        `${API_Services}/api/register`,
-        requestOptions
-      );
-      if (response.ok) {
-        const data = await response.json();
-        // console.log(data);
-        // setUsuarios((prevRol) => [...prevRol, data]);
-        Swal.fire({
-          icon: "success",
-          title: "Usuario guardado",
-          text: "Usuario registrado correctamente",
-        }).then(() => {
-          handleClose();
-          setform({ name: "", username: "", password: "", email: "" });
-        });
-      } else {
-        console.error("Ocurrió un error al guardar el Usuario");
-      }
-    } catch (error) {
-      console.error(error.message);
-    }
-  };
-
+  
   return (
     <div className="container">
       <div className="row">
