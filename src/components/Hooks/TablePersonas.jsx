@@ -12,6 +12,7 @@ const TablePersonas = ({ data }) => {
   const [page, setPage] = useState(1);
   const [sortColumn, setSortColumn] = useState();
   const { eliminarPersonas } = UseMetods();
+
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [sortType, setSortType] = useState();

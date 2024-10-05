@@ -40,7 +40,7 @@ export const Sidebar = ({ show, setShow }) => {
         (item) => item.nombreUsuario === localStorage.getItem("USERS")
       );
       // seIdRole(result.idRol);
-      seIdRole(rolEncontrado.nombreRol);
+      seIdRole(rolEncontrado?.nombreRol);
     }
   }, [data, isSuccess]);
 

@@ -6,7 +6,7 @@ import { FormControl } from "react-bootstrap";
 import ModalsUser from "../../Utilities/ModalsUser";
 import { ModelContext } from "../../Context/ModelContext";
 import { UseMetods } from "../../Utilities/UseMetods";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const Usuario = () => {
   const [filterTarea, setFilterTarea] = useState([]);
@@ -19,7 +19,8 @@ const Usuario = () => {
   const [page, setPage] = useState(1);
   const [open, setOpen] = useState(false);
   const [size, setSize] = useState(false);
-  const { GetUser } = UseMetods();
+  const { GetUser, updateStateUser, GetRol } = UseMetods();
+  const queryClient = useQueryClient();
 
   const { data } = useQuery({
     queryKey: ["GetUser"],
@@ -100,7 +101,47 @@ const Usuario = () => {
     }
   };
 
-  
+  const updateStateUserMutation = useMutation({
+    mutationFn: ({ idPerson, isActive }) => updateStateUser(idPerson, isActive),
+    onSuccess: () => {
+      queryClient.invalidateQueries("GetAllPersonas");
+      Swal.fire({
+        title: "Actualizado...!",
+        text: "estado actualizado con exito",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    },
+    onError: (error) => {
+      Swal.fire({
+        title: "Error",
+        text: "Hay un error",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 2000,
+      });
+    },
+  });
+
+  const fnUpdateEstadoPerson = async (data) => {
+    // console.log(data);
+    const idPerson = data?.idUsuario;
+    const isActive = data?.isActive ? false : true;
+    // console.log({ idPerson, isActive });
+    updateStateUserMutation.mutate({ idPerson, isActive });
+  };
+
+  const { data: datos, isSuccess: SuccesRol } = useQuery({
+    queryKey: ["GetRol"],
+    queryFn: GetRol,
+  });
+
+  const fn = (data) => {
+    const rolEncontrado = datos?.find((d) => d.idRol == data.idRol);
+    return rolEncontrado?.nombreRol;
+  };
+
   return (
     <div className="container">
       <div className="row">
@@ -172,8 +213,9 @@ const Usuario = () => {
                 <Cell>
                   {(rowData) => (
                     <Toggle
-                      defaultChecked={rowData.isActive}
+                      // defaultChecked={rowData.isActive}
                       checked={rowData.isActive}
+                      onClick={() => fnUpdateEstadoPerson(rowData)}
                       color={rowData.isActive ? "green" : "red"}
                     />
                   )}
@@ -193,13 +235,18 @@ const Usuario = () => {
                 </HeaderCell>
                 {/* <Cell dataKey="idRol" /> */}
                 <Cell>
-                  {(rowData) => (
-                    <span>
-                      {rowData.idRol === "ADMIN"
-                        ? "ADMIN"
-                        : rowData.idRol}
-                    </span>
-                  )}
+                  {(rowData) => {
+                    const nombreRol = fn(rowData);
+                    return (
+                      <span>
+                        {nombreRol
+                          ? nombreRol
+                          : rowData.idRol === "ADMIN"
+                          ? "ADMIN"
+                          : rowData.idRol}
+                      </span>
+                    );
+                  }}
                 </Cell>
               </Column>
 

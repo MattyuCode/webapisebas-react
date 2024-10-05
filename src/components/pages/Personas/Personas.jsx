@@ -10,7 +10,7 @@ import { UseMetods } from "../../Utilities/UseMetods";
 const Personas = () => {
   const API_Services = import.meta.env.VITE_APP_MY_API;
   const { IsEdit, setIsEdit } = useContext(ModelContext);
-  const { GetAllPersonas } = UseMetods();
+  const { GetAllPersonas, updateStateUser } = UseMetods();
   const token = localStorage.getItem("access_token");
   const [open, setOpen] = useState(false);
   const [size, setSize] = useState(false);
