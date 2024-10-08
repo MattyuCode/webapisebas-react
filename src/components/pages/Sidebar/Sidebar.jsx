@@ -36,13 +36,13 @@ export const Sidebar = ({ show, setShow }) => {
       const rolEncontrado = datos?.find(
         (d) => d.idRol == localStorage.getItem("idRol")
       );
-      const result = data?.find(
-        (item) => item.nombreUsuario === localStorage.getItem("USERS")
-      );
+      // const result = data?.find(
+      //   (item) => item.nombreUsuario === localStorage.getItem("USERS")
+      // );
       // seIdRole(result.idRol);
-      seIdRole(rolEncontrado.nombreRol);
+      seIdRole(rolEncontrado?.nombreRol);
     }
-  }, [data, isSuccess]);
+  }, [datos, isSuccess]);
 
   return (
     // <main className={show ? 'space-toggle' : null}>

@@ -5,8 +5,8 @@ import { Modal, Button as Boton } from "rsuite";
 import * as yup from "yup";
 import { UseMetods } from "./UseMetods";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import Select from "react-select";
 import Swal from "sweetalert2";
 import { ModelContext } from "../Context/ModelContext";
@@ -16,6 +16,10 @@ const ModalsUser = ({ open, handleClose }) => {
   const { GetRol, postUser } = UseMetods();
   const { upDatos, IsEdit, setIsEdit } = useContext(ModelContext);
   const [size, setSize] = useState(false);
+  const cerrar = () => {
+    handleClose();
+    resetForm();
+  };
   const [selectedRol, setSelectedRol] = useState([]);
   const handleSelectRol = (value) => setSelectedRol(value);
   const modalSize = ["xs", "sm", "md", "lg", "full"].includes(size)
@@ -103,8 +107,12 @@ const ModalsUser = ({ open, handleClose }) => {
       setIsEdit(false);
     },
     onError: (error) => {
-      toast.error(`${error.data?.mensaje}`, {
-        theme: "colored",
+      Swal.fire({
+        title: `${error?.data.message}`,
+        text: "Error..!",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 1500,
       });
     },
   });
@@ -133,6 +141,7 @@ const ModalsUser = ({ open, handleClose }) => {
   const resetForm = () => {
     reset();
     // setSectorSelccionado(null);
+    setSelectedRol([]);
   };
 
   const onSubmit = (data) => {
@@ -143,7 +152,7 @@ const ModalsUser = ({ open, handleClose }) => {
       rol: data.rol.value,
       password: data.password,
     };
-    console.log("🚀 ~ onSubmit ~ obj:", obj);
+    // console.log("🚀 ~ onSubmit ~ obj:", obj);
     // const update = {
     //   idPersona: upDatos[0]?.idPersona,
     //   nombreApellido: data.nombreCompleto,
@@ -292,7 +301,7 @@ const ModalsUser = ({ open, handleClose }) => {
                 </div>
 
                 <div className="d-flex justify-content-center">
-                  <Boton onClick={handleClose} color="red" appearance="primary">
+                  <Boton onClick={cerrar} color="red" appearance="primary">
                     Cerrar
                   </Boton>
                   &nbsp; &nbsp;

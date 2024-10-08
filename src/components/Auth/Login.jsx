@@ -24,7 +24,7 @@ const Login = () => {
   const fetchData = async () => {
     // debugger;
     const data = {
-      username: form.username,
+      username: form.username.toUpperCase(),
       password: form.password,
     };
     try {
