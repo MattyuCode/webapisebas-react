@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import Select from "react-select";
 import Swal from "sweetalert2";
 import { ModelContext } from "../Context/ModelContext";
+import { schema } from "../pages/Usuario/UsuarioSchema";
 
 const ModalsUser = ({ open, handleClose }) => {
   const queryClient = useQueryClient();
@@ -36,36 +37,6 @@ const ModalsUser = ({ open, handleClose }) => {
     label: item.nombreRol,
   }));
 
-  const schema = yup.object().shape({
-    nombreCompleto: yup.string().required("El nombre completo es requerido!"),
-    nombreUser: yup.string().required("El nombre Usuario es requerido!"),
-    password: yup
-      .string()
-      .required("La contraseña es obligatoria")
-      .min(8, "La contraseña debe tener al menos 8 caracteres")
-      .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+[{\]};:'",<.>/?])(?!.*\s).{8,}$/,
-        "La contraseña debe contener al menos una letra mayúscula, una letra minúscula, un número y un carácter especial"
-      ),
-    confirmPassword: yup
-      .string()
-      .oneOf([yup.ref("password"), null], "Las contraseñas deben coincidir")
-      .required("Debe confirmar la contraseña."),
-    telefono: yup
-      .string()
-      .typeError("Debe ser un número")
-      .length(8, "El número de teléfono debe tener exactamente 8 dígitos")
-      .required("El teléfono es requerido!"),
-    rol: yup
-      .object()
-      .shape({
-        value: yup.string().required("El rol es requerido!"),
-        label: yup.string().required(),
-      })
-      .nullable()
-      .required("El sector es requerido!"),
-  });
-
   const {
     register,
     handleSubmit,
@@ -80,16 +51,22 @@ const ModalsUser = ({ open, handleClose }) => {
     if (IsEdit) {
       setValue("nombreCompleto", upDatos[0].nombreApellido);
       setValue("telefono", upDatos[0].telefono);
-      // const sectorEncontrado = options.find(
-      //   (opt) => Number(opt.value) === upDatos[0].sector
-      // );
-      // if (sectorEncontrado) {
-      //   setValue("sector", sectorEncontrado);
-      //   setSectorSelccionado(sectorEncontrado);
-      // }
-      setValue("numDpi", upDatos[0].dpi);
+      const rolEncontrado = allRol.find(
+        (rol) => rol.idRol === upDatos[0].idRol
+      );
+      if (rolEncontrado) {
+        const formattedRol = {
+          value: rolEncontrado.idRol,
+          label: rolEncontrado.nombreRol,
+        };
+        setValue("rol", formattedRol);
+        setSelectedRol(formattedRol);
+      }
+      setValue("nombreUser", upDatos[0].nombreUsuario);
+      setSize("password", "")
     }
-  }, [IsEdit, upDatos, setValue]);
+      console.log("🚀 ~ useEffect ~ upDatos:", upDatos)
+  }, [IsEdit, upDatos, setValue, allRol]);
 
   const postUserMutation = useMutation({
     mutationFn: (dataNew) => postUser(dataNew),

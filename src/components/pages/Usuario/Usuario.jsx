@@ -10,7 +10,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const Usuario = () => {
   const [filterTarea, setFilterTarea] = useState([]);
-  const { IsEdit, setIsEdit } = useContext(ModelContext);
+  const { setUpDatos, IsEdit, setIsEdit } = useContext(ModelContext);
   const { Column, HeaderCell, Cell } = Table;
   const [sortColumn, setSortColumn] = useState();
   const [sortType, setSortType] = useState();
@@ -89,8 +89,10 @@ const Usuario = () => {
   const handleFilter = (e) => {
     const searchValue = e.target.value.toLowerCase();
     if (data && data.length > 0) {
-      const filteredData = data.filter((item) =>
-        item.nombreApellido.toLowerCase().includes(searchValue)
+      const filteredData = data.filter(
+        (item) =>
+          item.nombreApellido.toLowerCase().includes(searchValue) ||
+          item.nombreUsuario.toLowerCase().includes(searchValue)
       );
       setFilterTarea(filteredData);
     } else {
@@ -140,6 +142,11 @@ const Usuario = () => {
   const fn = (data) => {
     const rolEncontrado = datos?.find((d) => d.idRol == data.idRol);
     return rolEncontrado?.nombreRol;
+  };
+
+  const ActualizarDatos = (data) => {
+    setIsEdit(true);
+    setUpDatos([data]);
   };
 
   return (
@@ -262,6 +269,7 @@ const Usuario = () => {
                         color="cyan"
                         disabled={rowData.TOTAL_SUBTAREAS > 0}
                         appearance="primary"
+                        onClick={() => ActualizarDatos(rowData)}
                       >
                         Editar
                       </Button>

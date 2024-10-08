@@ -16,6 +16,10 @@ import { ModelContext } from "../Context/ModelContext";
 const Modals = ({ open, handleClose }) => {
   const queryClient = useQueryClient();
   const { postPersonas, modificarPersonas } = UseMetods();
+  const cerrar = () => {
+    handleClose();
+    resetForm();
+  };
   const [sectorSeleccionado, setSectorSelccionado] = useState(null);
   const { upDatos, IsEdit, setIsEdit } = useContext(ModelContext);
   const [size, setSize] = useState(false);
@@ -69,7 +73,7 @@ const Modals = ({ open, handleClose }) => {
         (opt) => Number(opt.value) === upDatos[0].sector
       );
       if (sectorEncontrado) {
-        setValue("sector", sectorEncontrado);
+        setValue("sector", sectorEncontrado); 
         setSectorSelccionado(sectorEncontrado);
       }
       setValue("numDpi", upDatos[0].dpi);
@@ -243,7 +247,7 @@ const Modals = ({ open, handleClose }) => {
                 </div>
 
                 <div className="d-flex justify-content-center">
-                  <Boton onClick={handleClose} color="red" appearance="primary">
+                  <Boton onClick={cerrar} color="red" appearance="primary">
                     Cerrar
                   </Boton>
                   &nbsp; &nbsp;
