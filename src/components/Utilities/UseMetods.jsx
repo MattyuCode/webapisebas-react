@@ -99,7 +99,7 @@ export const UseMetods = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const { Result } = response.data;
-      console.log(Result)
+      console.log(Result);
       return Result;
     } catch (error) {
       console.log(error);
@@ -124,7 +124,24 @@ export const UseMetods = () => {
     }
   };
 
+  const updateStateUser = async (idPerson, isActive) => {
+    // debugger;
+    try {
+      const response = await axios.put(
+        `${API_Services}/api/CRUDUSUARIO/ModificarEstadoUsuario/${idPerson}`,
+        { isActive },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (response.status == 200) {
+        return response.data;
+      }
+    } catch (error) {
+      throw error.response || error;
+    }
+  };
+
   return {
+    updateStateUser,
     postUser,
     GetUser,
     GetRol,
