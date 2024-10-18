@@ -133,7 +133,7 @@ const Api_Fetch = async () =>{
             />
           </div>
 
-          <Modals open={open} handleClose={handleClose} />
+          {/* <Modals open={open} handleClose={handleClose} /> */}
         </div>
       </div>
     </div>

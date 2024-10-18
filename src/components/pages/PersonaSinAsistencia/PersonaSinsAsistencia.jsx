@@ -3,69 +3,55 @@ import axios from "axios";
 import { Table, FormControl, Button, Spinner } from "react-bootstrap";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UseMetods } from "../../Utilities/UseMetods";
+import { useDebounce } from "../../Hooks/useDebounce";
 
 const PersonasSinAsistencia = () => {
-  const API_Services = import.meta.env.VITE_APP_MY_API; // Ruta de la API
-  const [tipoAsistencia, setTipoAsistencia] = useState("6"); // Estado para el tipo de asistencia
-  console.log("🚀 ~ PersonasSinAsistencia ~ tipoAsistencia:", tipoAsistencia);
-  const [personasSinAsistencia, setPersonasSinAsistencia] = useState([]); // Estado para los datos de personas
-  const [loading, setLoading] = useState(false); // Estado de carga
-  const [error, setError] = useState(null); // Estado para errores
+  const API_Services = import.meta.env.VITE_APP_MY_API;
+  const [tipoAsistencia, setTipoAsistencia] = useState("");
+  const [personasSinAsistencia, setPersonasSinAsistencia] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const { GetAllSinAsistencia } = UseMetods();
-  // const debounceBuscar = useDebounce(buscar, 500);
+  const [buscar, setBuscar] = useState("");
 
+  const debounceBuscar = useDebounce(buscar, 500);
 
   const { data: datos, isSuccess: SuccesRol } = useQuery({
     queryKey: ["GetAllSinAsistencia", tipoAsistencia],
     queryFn: () => GetAllSinAsistencia(tipoAsistencia),
+    enabled: !!tipoAsistencia,
   });
 
-  // Función para obtener las personas sin asistencia
-  const obtenerPersonasSinAsistencia = async () => {
-    setLoading(true); // Establecemos estado de carga
-    setError(null); // Reiniciamos el error
-    try {
-      const response = await axios.get(
-        `${API_Services}/api/SINASISTENCIA/personaSinAsistencia/${tipoAsistencia}`
-      );
-      setPersonasSinAsistencia(response.data); // Guardamos los datos en el estado
-    } catch (error) {
-      setError("Error al obtener los datos."); // En caso de error
-    } finally {
-      setLoading(false); // Terminamos el estado de carga
+  useEffect(() => {
+    if (debounceBuscar) {
+      setTipoAsistencia(debounceBuscar);
+    } else {
+      setTipoAsistencia("");
     }
-  };
+  }, [debounceBuscar]);
 
-  // Función para manejar la búsqueda al presionar el botón
-  const handleSearch = () => {
-    if (tipoAsistencia) {
-      obtenerPersonasSinAsistencia(); // Llamamos la función de búsqueda
-    }
+  const handleGrupoChange = (e) => {
+    const inputValue = e.target.value;
+    console.log("🚀 ~ handleGrupoChange ~ inputValue:", inputValue);
+    setBuscar(inputValue);
   };
 
   return (
     <div className="container">
       <h2>Buscar Personas Sin Asistencia</h2>
       <div className="mb-3">
-        {/* Campo de entrada para buscar por tipo de asistencia */}
         <FormControl
           type="number"
           placeholder="Ingrese ID tipo Asistencia"
-          value={tipoAsistencia}
-          onChange={(e) => setTipoAsistencia(e.target.value)}
+          value={buscar}
+          onChange={handleGrupoChange}
         />
-        <Button onClick={handleSearch} className="mt-2">
-          Buscar
-        </Button>
       </div>
 
-      {/* Mostramos el estado de carga */}
       {loading && <Spinner animation="border" variant="primary" />}
 
-      {/* Mostramos los errores */}
       {error && <p className="text-danger">{error}</p>}
 
-      {/* Mostramos los resultados en una tabla */}
       <Table striped bordered hover>
         <thead>
           <tr>
