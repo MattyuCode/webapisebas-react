@@ -148,6 +148,28 @@ export const Sidebar = ({ show, setShow }) => {
                 <i className="fas fa-money-bill-wave nav-link-icon"></i>
                 <span className="nav-link-name">PAGOS</span>
               </Link>
+
+              <Link
+                to="/actividadAsistencia"
+                className={`nav-links ${isActive === "/actividadAsistencia" ? "active" : ""
+                }`}
+                onClick={() => handleClickPath("/actividadAsistencia")}
+              >
+                <i className="fas fa-user-check nav-link-icon"></i>
+                <span className="nav-link-name">ACTIVIDAD DE ASISTENCIA</span>
+              </Link>
+
+              <Link
+                to="/personas-sin-asistencia"
+                className={`nav-links ${isActive === "/personas-sin-asistencia" ? "active" : ""
+                }`}
+                onClick={() => handleClickPath("/personas-sin-asistencia")}
+              >
+                <i className="fas fa-user-check nav-link-icon"></i>
+                <span className="nav-link-name">REPORTE DE ASISTENCIA</span>
+              </Link>
+
+             
             </div>
           </div>
 

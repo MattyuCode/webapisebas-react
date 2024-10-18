@@ -17,6 +17,32 @@ export const UseMetods = () => {
     }
   };
 
+  const GetAllActividadAsitencia = async () => {
+    try {
+      const response = await axios.get(
+        `${API_Services}/api/CRUDACTIVIDADASISTENCIA/ConsultarActividad`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const data = response.data;
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const GetAllPersonaSinAsistencia = async () => {
+    try {
+      const response = await axios.get(
+        `${API_Services}api/SINASISTENCIA/personaSinAsistencia/{tipoAsistencia}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const data = response.data;
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const postPersonas = async (data) => {
     // debugger;
     try {
@@ -99,7 +125,6 @@ export const UseMetods = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const { Result } = response.data;
-      console.log(Result);
       return Result;
     } catch (error) {
       console.log(error);
@@ -140,12 +165,47 @@ export const UseMetods = () => {
     }
   };
 
+  const UpdateUser = async (dataNew) => {
+    debugger;
+    try {
+      const response = await axios.put(
+        `${API_Services}/api/CRUDUSUARIO/ModificarUsuario`,
+        dataNew,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (response.status == 200) {
+        return response.data;
+      }
+    } catch (error) {
+      throw error.response || error;
+    }
+  };
+
+  const GetAllSinAsistencia = async (tipo) => {
+    try {
+      const response = await axios.get(
+        `${API_Services}/api/SINASISTENCIA/personaSinAsistencia/${tipo}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.status == 200) {
+        return response;
+      }
+    } catch (error) {
+      throw error.response || error;
+    }
+  };
+
   return {
+    GetAllSinAsistencia,
+    UpdateUser,
     updateStateUser,
     postUser,
     GetUser,
     GetRol,
     GetAllPersonas,
+    GetAllActividadAsitencia,
+    GetAllPersonaSinAsistencia,
     postPersonas,
     modificarPersonas,
     eliminarPersonas,

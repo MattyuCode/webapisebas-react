@@ -10,7 +10,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const Usuario = () => {
   const [filterTarea, setFilterTarea] = useState([]);
-  const { setUpDatos, IsEdit, setIsEdit } = useContext(ModelContext);
+  const { upDatos, setUpDatos, IsEdit, setIsEdit } = useContext(ModelContext);
   const { Column, HeaderCell, Cell } = Table;
   const [sortColumn, setSortColumn] = useState();
   const [sortType, setSortType] = useState();
@@ -127,10 +127,8 @@ const Usuario = () => {
   });
 
   const fnUpdateEstadoPerson = async (data) => {
-    // console.log(data);
     const idPerson = data?.idUsuario;
     const isActive = data?.isActive ? false : true;
-    // console.log({ idPerson, isActive });
     updateStateUserMutation.mutate({ idPerson, isActive });
   };
 

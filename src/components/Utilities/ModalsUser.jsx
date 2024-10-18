@@ -10,11 +10,11 @@ import { toast } from "react-toastify";
 import Select from "react-select";
 import Swal from "sweetalert2";
 import { ModelContext } from "../Context/ModelContext";
-import { schema } from "../pages/Usuario/UsuarioSchema";
+// import { schema } from "../pages/Usuario/UsuarioSchema";
 
 const ModalsUser = ({ open, handleClose }) => {
   const queryClient = useQueryClient();
-  const { GetRol, postUser } = UseMetods();
+  const { GetRol, postUser, UpdateUser } = UseMetods();
   const { upDatos, IsEdit, setIsEdit } = useContext(ModelContext);
   const [size, setSize] = useState(false);
   const cerrar = () => {
@@ -37,6 +37,44 @@ const ModalsUser = ({ open, handleClose }) => {
     label: item.nombreRol,
   }));
 
+  const schema = yup.object().shape({
+    nombreCompleto: yup.string().required("El nombre completo es requerido!"),
+    nombreUser: yup.string().required("El nombre de usuario es requerido!"),
+    telefono: yup
+      .string()
+      .typeError("Debe ser un número")
+      .length(8, "El número de teléfono debe tener exactamente 8 dígitos")
+      .required("El teléfono es requerido!"),
+    rol: yup
+      .object()
+      .shape({
+        value: yup.string().required("El rol es requerido!"),
+        label: yup.string().required(),
+      })
+      .nullable()
+      .required("El rol es requerido!"),
+    password: yup.string().when([], {
+      is: (value, context) => !context.parent.IsEdit, // Accede a IsEdit desde context.parent
+      then: yup
+        .string()
+        .required("La contraseña es obligatoria")
+        .min(8, "La contraseña debe tener al menos 8 caracteres")
+        .matches(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+[{\]};:'",<.>/?])(?!.*\s).{8,}$/,
+          "La contraseña debe contener al menos una letra mayúscula, una letra minúscula, un número y un carácter especial"
+        ),
+      otherwise: yup.string().notRequired(),
+    }),
+    confirmPassword: yup.string().when("password", (password, schema) => {
+      if (password) {
+        return schema
+          .oneOf([yup.ref("password"), null], "Las contraseñas deben coincidir")
+          .required("Debe confirmar la contraseña.");
+      }
+      return schema.notRequired();
+    }),
+  });
+
   const {
     register,
     handleSubmit,
@@ -45,7 +83,10 @@ const ModalsUser = ({ open, handleClose }) => {
     reset,
     formState: { errors },
     clearErrors,
-  } = useForm({ resolver: yupResolver(schema) });
+  } = useForm({
+    resolver: yupResolver(schema),
+    context: { IsEdit }, // Pasamos IsEdit como contexto a yup
+  });
 
   useEffect(() => {
     if (IsEdit) {
@@ -63,9 +104,7 @@ const ModalsUser = ({ open, handleClose }) => {
         setSelectedRol(formattedRol);
       }
       setValue("nombreUser", upDatos[0].nombreUsuario);
-      setSize("password", "")
     }
-      console.log("🚀 ~ useEffect ~ upDatos:", upDatos)
   }, [IsEdit, upDatos, setValue, allRol]);
 
   const postUserMutation = useMutation({
@@ -93,13 +132,14 @@ const ModalsUser = ({ open, handleClose }) => {
       });
     },
   });
-  const updatePersonaMutation = useMutation({
-    // mutationFn: (dataNew) => modificarPersonas(dataNew),
+
+  const updateUserMutation = useMutation({
+    mutationFn: (dataNew) => UpdateUser(dataNew),
     onSuccess: () => {
       queryClient.invalidateQueries("GetAllPersonas");
       Swal.fire({
         title: "Actualizado..!",
-        text: `Persona Actualizado`,
+        text: `Usuario Actualizado`,
         icon: "success",
         showConfirmButton: false,
         timer: 1500,
@@ -117,7 +157,6 @@ const ModalsUser = ({ open, handleClose }) => {
 
   const resetForm = () => {
     reset();
-    // setSectorSelccionado(null);
     setSelectedRol([]);
   };
 
@@ -127,19 +166,11 @@ const ModalsUser = ({ open, handleClose }) => {
       username: data.nombreUser.toUpperCase(),
       telefono: data.telefono,
       rol: data.rol.value,
-      password: data.password,
+      password: !IsEdit ? data.password : undefined,
     };
-    // console.log("🚀 ~ onSubmit ~ obj:", obj);
-    // const update = {
-    //   idPersona: upDatos[0]?.idPersona,
-    //   nombreApellido: data.nombreCompleto,
-    //   telefono: data.telefono,
-    //   sector: data.sector.value,
-    //   dpi: data.numDpi,
-    // };
-    // console.log("🚀 ~ onSubmit ~ IsEdit:", IsEdit);
+
     if (IsEdit) {
-      // updatePersonaMutation.mutateAsync(update);
+      updateUserMutation.mutateAsync(obj);
     } else {
       postUserMutation.mutateAsync(obj);
     }
@@ -242,50 +273,51 @@ const ModalsUser = ({ open, handleClose }) => {
                     </div>
                   </div>
 
-                  <div className="col-md-6">
-                    <div className="form-outline mb-5">
-                      <label className="form-label h5">Contraseña</label>
-                      <input
-                        type="text"
-                        placeholder="Ingresar contraseña"
-                        className="form-control"
-                        {...register("password")}
-                      />
-                      {errors.password && (
-                        <p className="text-danger">{errors.password.message}</p>
-                      )}
-                    </div>
-                  </div>
+                  {!IsEdit && (
+                    <>
+                      <div className="col-md-6">
+                        <div className="form-outline mb-5">
+                          <label className="form-label h5">Contraseña</label>
+                          <input
+                            type="text"
+                            placeholder="Ingresar contraseña"
+                            className="form-control"
+                            {...register("password")}
+                          />
+                          {errors.password && (
+                            <p className="text-danger">
+                              {errors.password.message}
+                            </p>
+                          )}
+                        </div>
+                      </div>
 
-                  <div className="col-md-6">
-                    <div className="form-outline mb-5">
-                      <label className="form-label h5">
-                        Confirmar Contraseña
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Confirmar Contraseña"
-                        className="form-control"
-                        {...register("confirmPassword")}
-                      />
-                      {errors.confirmPassword && (
-                        <p className="text-danger">
-                          {errors.confirmPassword.message}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                      <div className="col-md-6">
+                        <div className="form-outline mb-5">
+                          <label className="form-label h5">
+                            Confirmar Contraseña
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Confirmar contraseña"
+                            className="form-control"
+                            {...register("confirmPassword")}
+                          />
+                          {errors.confirmPassword && (
+                            <p className="text-danger">
+                              {errors.confirmPassword.message}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
 
-                <div className="d-flex justify-content-center">
-                  <Boton onClick={cerrar} color="red" appearance="primary">
-                    Cerrar
-                  </Boton>
-                  &nbsp; &nbsp;
-                  <Boton type="submit" color="green" appearance="primary">
-                    <i className="fas fa-save"></i> &nbsp;{" "}
-                    {IsEdit ? "Editar" : "Guardar"}
-                  </Boton>
+                  <div className="col-md-12">
+                    <button className="btn btn-success" type="submit">
+                      {IsEdit ? "Actualizar" : "Guardar"}
+                    </button>
+                  </div>
                 </div>
               </form>
             </div>
