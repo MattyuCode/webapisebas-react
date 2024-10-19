@@ -10,6 +10,7 @@ import Asistencia from "./components/pages/Asistencia/Asistencia";
 import Pagos from "./components/pages/Pagos/Pagos";
 import ActividadAsistencia from "./components/pages/ActividadAsistencia/ActividadAsistencia"
 import PersonasSinAsistencia from "./components/pages/PersonaSinAsistencia/PersonaSinsAsistencia";
+import PersonaSinPago from "./components/pages/PersonaSinPago/PersonaSinPago";
 
 
 
@@ -36,7 +37,7 @@ function App() {
                 <Route path="/pagos" element={<Pagos />} />
                 <Route path="/actividadAsistencia" element={<ActividadAsistencia/>} />
                 <Route path="/personas-sin-asistencia" element={<PersonasSinAsistencia />} />
-
+                <Route path="/personas-sin-pago" element={<PersonaSinPago/>} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

@@ -2,6 +2,10 @@ import { FormControl } from "react-bootstrap";
 import TableComponent from "../../Utilities/TableComponent";
 import { useEffect, useState } from "react";
 import Modal from "../../Utilities/Modals";
+import { useNavigate } from "react-router-dom";
+import { UseMetods } from "../../Utilities/UseMetods";
+import { useQuery } from "@tanstack/react-query";
+
 
 const ActividadAsistencia = () => {
     const API_Services = import.meta.env.VITE_APP_MY_API;
@@ -20,6 +24,13 @@ const ActividadAsistencia = () => {
       setSize(value);
       setOpen(true);
     };
+    const {GetAllActividadAsistencia} = UseMetods();
+    const { data: datos } = useQuery({
+      queryKey: ["GetAllActividadAsistencia"],
+      queryFn: GetAllActividadAsistencia
+    });
+    console.log(datos.Result)
+    const navigate = useNavigate()
 
     const modalSize = ["xs", "sm", "md", "lg", "full"].includes(size)
     ? size
@@ -70,7 +81,7 @@ useEffect (()=>{
 const Api_Fetch = async () =>{
   try {
     const response = await fetch (
-      `${API_Services} /api/CRUDACTIVIDADASISTENCIA/ConsultarActividad`,
+      `${API_Services}/api/CRUDACTIVIDADASISTENCIA/ConsultarActividad`,
       {headers: {Authotization: `Bearer ${token}`}}
      );
      const data = await response.json();
@@ -87,8 +98,12 @@ const Api_Fetch = async () =>{
     console.log(error);
   }
 }
+Api_Fetch();
+},[API_Services, token]);
 
-})
+  const reporteActividadAsistencia = ()=>{
+    navigate("/personas-sin-asistencia")
+  }
 
   return (
     <div className="container">
@@ -106,6 +121,17 @@ const Api_Fetch = async () =>{
                   style={{ width: "100%" }}
                 >
                   Registrar Actividad de Asistencia
+                </button>
+              </div>
+
+              <div className="">
+                <button
+                   onClick={reporteActividadAsistencia}
+                
+                  className="btn btnCrea btn-success text-decoration-none"
+                  style={{width: "100%" }}
+                >
+                  REPORTE ACTIVIDAD
                 </button>
               </div>
 

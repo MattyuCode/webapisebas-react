@@ -169,6 +169,16 @@ export const Sidebar = ({ show, setShow }) => {
                 <span className="nav-link-name">REPORTE DE ASISTENCIA</span>
               </Link>
 
+              <Link
+                to="/personas-sin-pago"
+                className={`nav-links ${isActive === "/personas-sin-pago" ? "active" : ""
+                }`}
+                onClick={() => handleClickPath("/personas-sin-pago")}
+              >
+                <i className="fas fa-user-check nav-link-icon"></i>
+                <span className="nav-link-name">REPORTE DE ACTIVIDAD PAGO</span>
+              </Link>
+
              
             </div>
           </div>

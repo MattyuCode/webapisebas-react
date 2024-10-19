@@ -30,10 +30,10 @@ export const UseMetods = () => {
     }
   };
 
-  const GetAllPersonaSinAsistencia = async () => {
+  const GetAllPersonaSinPago = async () => {
     try {
       const response = await axios.get(
-        `${API_Services}api/SINASISTENCIA/personaSinAsistencia/{tipoAsistencia}`,
+        `${API_Services}/api/SINPAGO/personasinPago2/{idTipoPago}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const data = response.data;
@@ -42,6 +42,21 @@ export const UseMetods = () => {
       console.log(error);
     }
   };
+
+  const GetAllPersonaSinAsistencia = async () => {
+    try {
+      const response = await axios.get(
+        `${API_Services}/api/SINASISTENCIA/personaSinAsistencia/{tipoAsistencia}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const data = response.data;
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
 
   const postPersonas = async (data) => {
     // debugger;
@@ -195,9 +210,42 @@ export const UseMetods = () => {
       throw error.response || error;
     }
   };
+  
+  const GetAllSinPago = async (idTipoPago) => {
+    try {
+      const response = await axios.get(
+        `${API_Services}/api/SINPAGO/personasinPago2/${idTipoPago}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      if (response.status == 200) {
+        return response;
+      }
+
+    } catch (error) {
+        throw error.response || error;
+    }
+  };
+
+  const GetAllActividadAsistencia = async () => {
+    try {
+      const response = await axios.get(
+        `${API_Services}/api/CRUDACTIVIDADASISTENCIA/ConsultarActividad`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if(response.status == 200){
+        const data = response.Result;
+        return response.data;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return {
+    GetAllActividadAsistencia,
     GetAllSinAsistencia,
+    GetAllSinPago,
     UpdateUser,
     updateStateUser,
     postUser,
@@ -206,6 +254,7 @@ export const UseMetods = () => {
     GetAllPersonas,
     GetAllActividadAsitencia,
     GetAllPersonaSinAsistencia,
+    GetAllPersonaSinPago,
     postPersonas,
     modificarPersonas,
     eliminarPersonas,

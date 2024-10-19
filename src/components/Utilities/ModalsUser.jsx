@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 import Select from "react-select";
 import Swal from "sweetalert2";
 import { ModelContext } from "../Context/ModelContext";
-// import { schema } from "../pages/Usuario/UsuarioSchema";
+import { schema } from "../pages/Usuario/UsuarioSchema";
 
 const ModalsUser = ({ open, handleClose }) => {
   const queryClient = useQueryClient();
@@ -37,43 +37,7 @@ const ModalsUser = ({ open, handleClose }) => {
     label: item.nombreRol,
   }));
 
-  const schema = yup.object().shape({
-    nombreCompleto: yup.string().required("El nombre completo es requerido!"),
-    nombreUser: yup.string().required("El nombre de usuario es requerido!"),
-    telefono: yup
-      .string()
-      .typeError("Debe ser un número")
-      .length(8, "El número de teléfono debe tener exactamente 8 dígitos")
-      .required("El teléfono es requerido!"),
-    rol: yup
-      .object()
-      .shape({
-        value: yup.string().required("El rol es requerido!"),
-        label: yup.string().required(),
-      })
-      .nullable()
-      .required("El rol es requerido!"),
-    password: yup.string().when([], {
-      is: (value, context) => !context.parent.IsEdit, // Accede a IsEdit desde context.parent
-      then: yup
-        .string()
-        .required("La contraseña es obligatoria")
-        .min(8, "La contraseña debe tener al menos 8 caracteres")
-        .matches(
-          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+[{\]};:'",<.>/?])(?!.*\s).{8,}$/,
-          "La contraseña debe contener al menos una letra mayúscula, una letra minúscula, un número y un carácter especial"
-        ),
-      otherwise: yup.string().notRequired(),
-    }),
-    confirmPassword: yup.string().when("password", (password, schema) => {
-      if (password) {
-        return schema
-          .oneOf([yup.ref("password"), null], "Las contraseñas deben coincidir")
-          .required("Debe confirmar la contraseña.");
-      }
-      return schema.notRequired();
-    }),
-  });
+  
 
   const {
     register,
@@ -85,7 +49,7 @@ const ModalsUser = ({ open, handleClose }) => {
     clearErrors,
   } = useForm({
     resolver: yupResolver(schema),
-    context: { IsEdit }, // Pasamos IsEdit como contexto a yup
+     
   });
 
   useEffect(() => {
