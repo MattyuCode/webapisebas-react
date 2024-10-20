@@ -19,6 +19,7 @@ import NotFound from "./components/NotFound/NotFound";
 import Home from "./components/pages/Home/Home";
 import { UseTypeUser } from "./components/Context/UseTypeUser";
 import { ModelProvider } from "./components/Context/ModelContext";
+import PersonasConActividadPendiente from "./components/pages/Personas/PersonasConActividadPendiente";
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
                 <Route path="/actividadAsistencia" element={<ActividadAsistencia/>} />
                 <Route path="/personas-sin-asistencia" element={<PersonasSinAsistencia />} />
                 <Route path="/personas-sin-pago" element={<PersonaSinPago/>} />
+                <Route path="/personaConActividad" element={<PersonasConActividadPendiente/>} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

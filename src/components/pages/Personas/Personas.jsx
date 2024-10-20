@@ -6,6 +6,7 @@ import Modals from "../../Utilities/Modals";
 import { ToastContainer } from "react-toastify";
 import { ModelContext } from "../../Context/ModelContext";
 import { UseMetods } from "../../Utilities/UseMetods";
+import { useNavigate } from "react-router-dom";
 
 const Personas = () => {
   const API_Services = import.meta.env.VITE_APP_MY_API;
@@ -15,6 +16,7 @@ const Personas = () => {
   const [open, setOpen] = useState(false);
   const [size, setSize] = useState(false);
   const [allDatos, setAllDatos] = useState([]);
+  const navigate = useNavigate();
 
   const handleClose = () => {
     setIsEdit(false);
@@ -54,6 +56,8 @@ const Personas = () => {
       setAllDatos(newData);
     }
   };
+  const verPersona = () => navigate("/personaConActividad");
+  
 
   return (
     <>
@@ -72,6 +76,15 @@ const Personas = () => {
                     style={{ width: "100%" }}
                   >
                     Registrar Personas
+                  </button>
+                </div>
+                <div className="">
+                  <button
+                    onClick={verPersona}
+                    className="btn btnCrea btn-success text-decoration-none"
+                    style={{ width: "100%" }}
+                  >
+                    Personas Con Actividad
                   </button>
                 </div>
 

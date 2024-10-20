@@ -38,7 +38,7 @@ const PersonasSinAsistencia = () => {
 
   return (
     <div className="container">
-      <h2>Buscar Personas Sin Asistencia</h2>
+      <h2>Reporte de asistencias de personas pendientes</h2>
       <div className="mb-3">
         <FormControl
           type="number"

@@ -56,8 +56,6 @@ export const UseMetods = () => {
     }
   };
 
-
-
   const postPersonas = async (data) => {
     // debugger;
     try {
@@ -210,20 +208,19 @@ export const UseMetods = () => {
       throw error.response || error;
     }
   };
-  
+
   const GetAllSinPago = async (idTipoPago) => {
     try {
       const response = await axios.get(
         `${API_Services}/api/SINPAGO/personasinPago2/${idTipoPago}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      
+
       if (response.status == 200) {
         return response;
       }
-
     } catch (error) {
-        throw error.response || error;
+      throw error.response || error;
     }
   };
 
@@ -233,7 +230,7 @@ export const UseMetods = () => {
         `${API_Services}/api/CRUDACTIVIDADASISTENCIA/ConsultarActividad`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      if(response.status == 200){
+      if (response.status == 200) {
         const data = response.Result;
         return response.data;
       }
@@ -242,7 +239,23 @@ export const UseMetods = () => {
     }
   };
 
+  const getPersonaConActividad = async (idPersona) => {
+    // debugger
+    try {
+      const response = await axios.get(
+        `${API_Services}/api/CRUDASISTENCIA/pendientes/${idPersona}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      // if (response.status === 200) {
+        return response.data;
+      // }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return {
+    getPersonaConActividad,
     GetAllActividadAsistencia,
     GetAllSinAsistencia,
     GetAllSinPago,
