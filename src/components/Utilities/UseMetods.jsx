@@ -247,14 +247,27 @@ export const UseMetods = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       // if (response.status === 200) {
-        return response.data;
+      return response.data;
       // }
     } catch (error) {
       console.log(error);
     }
   };
 
+  const GetAllAsistencia = async () => {
+    try {
+      const response = await axios.get(
+        `${API_Services}/api/CRUDASISTENCIA/GetAllAsisencia`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (response.status === 200) {
+        return response.data;
+      }
+    } catch (error) {}
+  };
+
   return {
+    GetAllAsistencia,
     getPersonaConActividad,
     GetAllActividadAsistencia,
     GetAllSinAsistencia,
