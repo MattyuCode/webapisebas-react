@@ -37,7 +37,7 @@ const PersonasConActividadPendiente = () => {
 
   return (
     <div className="container">
-      <h2>BUSCAr PERSONAS CON ACTIVIDAD PENDIENTES</h2>
+      <h2>BUSCAR ID PERSONAS CON ACTIVIDAD PENDIENTES</h2>
       <div className="mb-3">
         <FormControl
           type="number"
@@ -71,7 +71,7 @@ const PersonasConActividadPendiente = () => {
           ) : (
             <tr>
               <td colSpan="2" className="text-center">
-                No hay personas pendientes en este pago
+                No hay personas pendientes en esta asistencia
               </td>
             </tr>
           )}

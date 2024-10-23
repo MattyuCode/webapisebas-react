@@ -1,20 +1,52 @@
 import { Button, Pagination, Table } from "rsuite";
-
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import Swal from "sweetalert2";
+import { UseMetods } from "../../Utilities/UseMetods";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ModelContext } from "../../Context/ModelContext";
 
 const TableActividadAsistencia = ({ data }) => {
-  console.log("🚀 ~ TableActividadAsistencia ~ data:", data)
   const { Column, HeaderCell, Cell } = Table;
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(1);
+  const [open, setOpen] = useState(false);
+  const [size, setSize] = useState(false);
   const [sortColumn, setSortColumn] = useState();
   const [sortType, setSortType] = useState();
   const [loading, setLoading] = useState(false);
+  const { deleteAcAsis } = UseMetods();
+  const queryClient = useQueryClient();
+  const { setUpDatos, IsEdit, setIsEdit } = useContext(ModelContext);
+  const handleOpen = (value) => {
+    setSize(value);
+    setOpen(true);
+  };
 
   const handleChangeLimit = (dataKey) => {
     setPage(1);
     setLimit(dataKey);
   };
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => deleteAcAsis(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries("GetAllActividadAsistencia");
+      Swal.fire({
+        title: "Borrado...!",
+        text: "Datos borrado con exito",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    },
+    onError: (error) => {
+      Swal.fire({
+        title: "Error",
+        text: `${error.data?.Result}`,
+        icon: "error",
+      });
+    },
+  });
 
   const handleSortColumn = (sortColumn, sortType) => {
     setLoading(true);
@@ -23,6 +55,11 @@ const TableActividadAsistencia = ({ data }) => {
       setSortColumn(sortColumn);
       setSortType(sortType);
     }, 500);
+  };
+
+  const ActualizarDatos = (data) => {
+    setUpDatos(data);
+    setIsEdit(true);
   };
 
   return (
@@ -47,20 +84,20 @@ const TableActividadAsistencia = ({ data }) => {
         affixHeader
         affixHorizontalScrollbar
       >
-        <Column width={250} sortable resizable>
+        <Column width={350} sortable resizable>
           <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
-          idActividadAsistencia
+            idActividadAsistencia
           </HeaderCell>
           <Cell dataKey="idActividadAsistencia" />
         </Column>
-        <Column width={250} sortable resizable>
+        <Column width={300} sortable resizable>
           <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
-          nombreActividad
+            nombreActividad
           </HeaderCell>
           <Cell dataKey="nombreActividad" />
         </Column>
 
-        <Column width={230} fixed="right" align="center">
+        <Column width={450} fixed="right" align="center">
           <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
             ACCIONES
           </HeaderCell>
@@ -72,7 +109,7 @@ const TableActividadAsistencia = ({ data }) => {
                   color="cyan"
                   disabled={rowData.TOTAL_SUBTAREAS > 0}
                   appearance="primary"
-                //   onClick={() => ActualizarDatos(rowData)}
+                  onClick={() => ActualizarDatos(rowData)}
                 >
                   Editar
                 </Button>
@@ -82,7 +119,6 @@ const TableActividadAsistencia = ({ data }) => {
                   color="red"
                   appearance="primary"
                   onClick={() => {
-                    // console.log(rowData)
                     Swal.fire({
                       title: "¿Está seguro de eliminar este registro?",
                       text: "Esta acción no se puede deshacer",
@@ -95,13 +131,17 @@ const TableActividadAsistencia = ({ data }) => {
                       reverseButtons: true,
                     }).then((result) => {
                       if (result.isConfirmed) {
-                        // deleteMutation.mutateAsync(rowData?.idPersona);
-                      } else if (result.dismiss === Swal.DismissReason.cancel) {
-                        Swal.fire(
-                          "Cancelado",
-                          "El registro está seguro 🗃",
-                          "error"
+                        deleteMutation.mutateAsync(
+                          rowData?.idActividadAsistencia
                         );
+                      } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire({
+                          title: "Cancelado",
+                          text: "El detalle no ha sido eliminado.",
+                          icon: "error",
+                          showConfirmButton: false,
+                          timer: 1500,
+                        });
                       }
                     });
                   }}

@@ -1,46 +1,20 @@
-import { useContext, useState } from "react";
-import { Table, Pagination, Button } from "rsuite";
-import { UseMetods } from "../../Utilities/UseMetods";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import Swal from "sweetalert2";
-import { ModelContext } from "../../Context/ModelContext";
+import { Button, Pagination, Table } from "rsuite";
 
-export const GridAsistencia = ({ data }) => {
-  const { Column, HeaderCell, Cell } = Table;
-  const [limit, setLimit] = useState(10);
-  const [page, setPage] = useState(1);
-  const [sortColumn, setSortColumn] = useState();
-  const [loading, setLoading] = useState(false);
-  const [sortType, setSortType] = useState();
-  const { deleteAsis } = UseMetods();
-  const queryClient = useQueryClient();
-  const { setUpDatos, setIsEdit } = useContext(ModelContext);
+import React, { useState } from "react";
 
-  const handleChangeLimit = (dataKey) => {
+const TableActividadPago = ({data}) =>{
+// console.log("🚀 ~ TableActividadPago ~ data:", data);
+const { Column, HeaderCell, Cell } = Table;
+const [limit, setLimit] = useState(10);
+const [page, setPage] = useState(1);
+const [sortColumn, setSortColumn] = useState();
+const [sortType, setSortType] = useState();
+const [loading, setLoading] = useState(false);
+
+const handleChangeLimit = (dataKey) => {
     setPage(1);
     setLimit(dataKey);
   };
-
-  const deleteMutation = useMutation({
-    mutationFn: (id) => deleteAsis(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries("GetAllAsistencia");
-      Swal.fire({
-        title: "Borrado...!",
-        text: "Datos borrado con exito",
-        icon: "success",
-        showConfirmButton: false,
-        timer: 1500,
-      });
-    },
-    onError: (error) => {
-      Swal.fire({
-        title: "Error",
-        text: `${error.data?.Result}`,
-        icon: "error",
-      });
-    },
-  });
 
   const handleSortColumn = (sortColumn, sortType) => {
     setLoading(true);
@@ -49,11 +23,6 @@ export const GridAsistencia = ({ data }) => {
       setSortColumn(sortColumn);
       setSortType(sortType);
     }, 500);
-  };
-
-  const actualizar = (data) => {
-    setUpDatos(data);
-    setIsEdit(true);
   };
 
   return (
@@ -78,48 +47,23 @@ export const GridAsistencia = ({ data }) => {
         affixHeader
         affixHorizontalScrollbar
       >
-        <Column width={100} sortable resizable>
-          <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
-            idAsistencia
-          </HeaderCell>
-          <Cell dataKey="idAsistencia" />
-        </Column>
-        <Column width={100} sortable resizable>
-          <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
-            idPersona
-          </HeaderCell>
-          {/* <Cell dataKey="idPersona" /> */}
-          <Cell>{(rowData) => rowData.idPersona?.idPersona}</Cell>
-        </Column>
-
         <Column width={250} sortable resizable>
           <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
-            Nombre Persona
+          idActividadPago
           </HeaderCell>
-          <Cell>{(rowData) => rowData.idPersona?.nombreApellido}</Cell>
+          <Cell dataKey="idActividadPago" />
         </Column>
-
-        <Column width={100} sortable resizable>
-          <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
-            ID Actividad
-          </HeaderCell>
-          <Cell>
-            {(rowData) => rowData.tipoAsistencia?.idActividadAsistencia}
-          </Cell>
-        </Column>
-
         <Column width={250} sortable resizable>
           <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
-            Nombre Actividad
+          nombreActividad
           </HeaderCell>
-          <Cell>{(rowData) => rowData.tipoAsistencia?.nombreActividad}</Cell>
+          <Cell dataKey="nombreActividad" />
         </Column>
-
         <Column width={250} sortable resizable>
           <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
-            descripcion
+          cantidad 
           </HeaderCell>
-          <Cell dataKey="descripcion" />
+          <Cell dataKey="cantidad" />
         </Column>
 
         <Column width={230} fixed="right" align="center">
@@ -132,9 +76,9 @@ export const GridAsistencia = ({ data }) => {
                 <Button
                   size="sm"
                   color="cyan"
-                  // disabled={rowData.TOTAL_SUBTAREAS > 0}
-                  onClick={() => actualizar(rowData)}
+                  disabled={rowData.TOTAL_SUBTAREAS > 0}
                   appearance="primary"
+                //   onClick={() => ActualizarDatos(rowData)}
                 >
                   Editar
                 </Button>
@@ -144,6 +88,7 @@ export const GridAsistencia = ({ data }) => {
                   color="red"
                   appearance="primary"
                   onClick={() => {
+                    // console.log(rowData)
                     Swal.fire({
                       title: "¿Está seguro de eliminar este registro?",
                       text: "Esta acción no se puede deshacer",
@@ -154,17 +99,15 @@ export const GridAsistencia = ({ data }) => {
                       confirmButtonText: "Sí, eliminar",
                       cancelButtonText: "Cancelar",
                       reverseButtons: true,
-                    }).then(async (result) => {
+                    }).then((result) => {
                       if (result.isConfirmed) {
-                        await deleteMutation.mutateAsync(rowData?.idAsistencia);
+                        // deleteMutation.mutateAsync(rowData?.idPersona);
                       } else if (result.dismiss === Swal.DismissReason.cancel) {
-                        Swal.fire({
-                          title: "Cancelado",
-                          text: "El detalle no ha sido eliminado.",
-                          icon: "error",
-                          showConfirmButton: false,
-                          timer: 1500,
-                        });
+                        Swal.fire(
+                          "Cancelado",
+                          "El registro está seguro 🗃",
+                          "error"
+                        );
                       }
                     });
                   }}
@@ -198,4 +141,6 @@ export const GridAsistencia = ({ data }) => {
       </div>
     </div>
   );
-};
+
+}; 
+export default TableActividadPago;

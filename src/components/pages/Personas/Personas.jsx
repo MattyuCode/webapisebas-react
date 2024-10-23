@@ -57,7 +57,7 @@ const Personas = () => {
     }
   };
   const verPersona = () => navigate("/personaConActividad");
-  
+  const verPersonConPago = () => navigate("/personaConActividadPagoPendiente");
 
   return (
     <>
@@ -84,10 +84,19 @@ const Personas = () => {
                     className="btn btnCrea btn-success text-decoration-none"
                     style={{ width: "100%" }}
                   >
-                    Personas Con Actividad
+                    Personas con asistencia pendiente
                   </button>
                 </div>
 
+                <div className="">
+                  <button
+                    onClick={verPersonConPago}
+                    className="btn btnCrea btn-success text-decoration-none"
+                    style={{ width: "100%" }}
+                  >
+                    Personas con pagos pendiente
+                  </button>
+                </div>
                 <div className="">
                   <FormControl
                     type="search"

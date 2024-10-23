@@ -231,7 +231,6 @@ export const UseMetods = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (response.status == 200) {
-        const data = response.Result;
         return response.data;
       }
     } catch (error) {
@@ -266,10 +265,164 @@ export const UseMetods = () => {
     } catch (error) {}
   };
 
+  const inserNewAsistencia = async (data) => {
+    try {
+      const response = await axios.post(
+        `${API_Services}/api/CRUDASISTENCIA/CrearAsistencia`,
+        data,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } catch (error) {}
+  };
+
+  const GetPersonaConActividadPagoPendiente = async (idPersona) => {
+    //debugger
+    try {
+      const response = await axios.get(
+        `${API_Services}/api/CRUDPAGO/pendientes/${idPersona}`,
+
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      // if (response.status === 200) {
+      return response.data;
+      // }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const GetAllActividadPago = async () => {
+    try {
+      const response = await axios.get(
+        `${API_Services}/api/CRUDACTIVIDAD/ConsultarActividad`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (response.status == 200) {
+        return response.data;
+      }
+    } catch {
+      console.log(error);
+    }
+  };
+
+  const postAcAsis = async (data) => {
+    // debugger;
+    try {
+      const response = await axios.post(
+        `${API_Services}/api/CRUDACTIVIDADASISTENCIA/CrearActividad`,
+        data,
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status == 201) {
+        return response.data;
+      }
+    } catch (error) {
+      throw error.response || error;
+    }
+  };
+
+  const deleteAcAsis = async (id) => {
+    try {
+      const response = await axios.delete(
+        `${API_Services}/api/CRUDACTIVIDADASISTENCIA/EliminarActividad/${id}`,
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status == 200) {
+        return response;
+      } else {
+        return response.data;
+      }
+    } catch (error) {
+      throw error.response || error;
+    }
+  };
+
+  const updateAcAsis = async (dataNew) => {
+    // debugger;
+    try {
+      const response = await axios.put(
+        `${API_Services}/api/CRUDACTIVIDADASISTENCIA/ModificarActividad`,
+        dataNew,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (response.status == 201) {
+        return response.data;
+      }
+    } catch (error) {
+      throw error.response || error;
+    }
+  };
+
+  const postAsistencia = async (data) => {
+    // debugger;
+    try {
+      const response = await axios.post(
+        `${API_Services}/api/CRUDASISTENCIA/CrearAsistencia`,
+        data,
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status == 201) {
+        return response.data;
+      }
+    } catch (error) {
+      throw error.response || error;
+    }
+  };
+
+  const deleteAsis = async (id) => {
+    try {
+      const response = await axios.delete(
+        `${API_Services}/api/CRUDASISTENCIA/EliminarAsistencia/${id}`,
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status == 200) {
+        return response;
+      } else {
+        return response.data;
+      }
+    } catch (error) {
+      throw error.response || error;
+    }
+  };
+
   return {
+    //NOTE. ActividadAsistencia
+    updateAcAsis,
+    deleteAcAsis,
+    postAcAsis,
+    inserNewAsistencia,
+    //NOTE: Asistencia
     GetAllAsistencia,
+    postAsistencia,
+    deleteAsis,
+    //
     getPersonaConActividad,
     GetAllActividadAsistencia,
+    GetAllActividadPago,
     GetAllSinAsistencia,
     GetAllSinPago,
     UpdateUser,
@@ -284,5 +437,6 @@ export const UseMetods = () => {
     postPersonas,
     modificarPersonas,
     eliminarPersonas,
+    GetPersonaConActividadPagoPendiente,
   };
 };

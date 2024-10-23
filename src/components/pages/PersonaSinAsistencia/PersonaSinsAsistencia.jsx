@@ -4,6 +4,7 @@ import { Table, FormControl, Button, Spinner } from "react-bootstrap";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UseMetods } from "../../Utilities/UseMetods";
 import { useDebounce } from "../../Hooks/useDebounce";
+import { useNavigate } from "react-router-dom";
 
 const PersonasSinAsistencia = () => {
   const API_Services = import.meta.env.VITE_APP_MY_API;
@@ -13,7 +14,7 @@ const PersonasSinAsistencia = () => {
   const [error, setError] = useState(null);
   const { GetAllSinAsistencia } = UseMetods();
   const [buscar, setBuscar] = useState("");
-
+  const navigate = useNavigate();
   const debounceBuscar = useDebounce(buscar, 500);
 
   const { data: datos, isSuccess: SuccesRol } = useQuery({
@@ -32,9 +33,11 @@ const PersonasSinAsistencia = () => {
 
   const handleGrupoChange = (e) => {
     const inputValue = e.target.value;
-    console.log("🚀 ~ handleGrupoChange ~ inputValue:", inputValue);
+    // console.log("🚀 ~ handleGrupoChange ~ inputValue:", inputValue);
     setBuscar(inputValue);
   };
+
+  const regresar = () => navigate("/actividadAsistencia");
 
   return (
     <div className="container">
@@ -79,6 +82,10 @@ const PersonasSinAsistencia = () => {
           )}
         </tbody>
       </Table>
+
+      <button className="btn btn-danger" onClick={regresar}>
+        Regresar
+      </button>
     </div>
   );
 };

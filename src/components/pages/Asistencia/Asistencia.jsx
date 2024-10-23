@@ -1,10 +1,12 @@
 import { FormControl } from "react-bootstrap";
 import TableComponent from "../../Utilities/TableComponent";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Modals from "../../Utilities/Modals";
 import { useQuery } from "@tanstack/react-query";
 import { UseMetods } from "../../Utilities/UseMetods";
 import { GridAsistencia } from "./GridAsistencia";
+import { ModalAsistencia } from "./ModalAsistencia";
+import { ModelContext } from "../../Context/ModelContext";
 
 const Asistencia = () => {
   const [datas, setDatas] = useState([]);
@@ -12,6 +14,7 @@ const Asistencia = () => {
   const [sortType, setSortType] = useState();
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(1);
+  const { upDatos, setIsEdit, IsEdit } = useContext(ModelContext);
   const [open, setOpen] = useState(false);
   const [size, setSize] = useState(false);
   const handleClose = () => {
@@ -61,6 +64,12 @@ const Asistencia = () => {
     return i >= start && i <= end;
   });
 
+  useEffect(() => {
+    if (IsEdit) {
+      abriModal();
+    }
+  }, [IsEdit]);
+
   return (
     <div className="container">
       <div className="row">
@@ -94,7 +103,7 @@ const Asistencia = () => {
             <GridAsistencia data={data?.Result} />
           </div>
 
-          <ModalAsistencia open={open} handleClose={handleClose} />
+          <ModalAsistencia open={open} handleClose={handleClose} size={size} />
         </div>
       </div>
     </div>
