@@ -171,7 +171,7 @@ export const Sidebar = ({ show, setShow }) => {
 
             
 
-              <Link
+              {/* <Link
                 to="/personas-sin-pago"
                 className={`nav-links ${isActive === "/personas-sin-pago" ? "active" : ""
                 }`}
@@ -179,7 +179,7 @@ export const Sidebar = ({ show, setShow }) => {
               >
                 <i className="fas fa-user-check nav-link-icon"></i>
                 <span className="nav-link-name">REPORTE DE ACTIVIDAD PAGO</span>
-              </Link>
+              </Link> */}
 
              
             </div>

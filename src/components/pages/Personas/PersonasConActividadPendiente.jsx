@@ -56,7 +56,7 @@ const PersonasConActividadPendiente = () => {
           <tr>
             <th>ID Activdad</th>
             <th>Nombre y Apellido</th>
-            <th>Nombre ACTIVIDAD PAGO</th>
+            <th>Nombre ACTIVIDAD</th>
           </tr>
         </thead>
         <tbody>

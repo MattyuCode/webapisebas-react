@@ -409,7 +409,93 @@ export const UseMetods = () => {
     }
   };
 
+  const updateAsis = async (dataNew) => {
+    // debugger;
+    try {
+      const response = await axios.put(
+        `${API_Services}/api/CRUDASISTENCIA/ActualizarAsistencia`,
+        dataNew,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (response.status == 200) {
+        return response.data;
+      }
+    } catch (error) {
+      throw error.response || error;
+    }
+  };
+
+  const postActividadPagos = async (data) => {
+    // debugger;
+    try {
+      const response = await axios.post(
+        `${API_Services}/api/CRUDACTIVIDAD/CrearActividad`,
+        data,
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status == 201) {
+        return response.data;
+      }
+    } catch (error) {
+      throw error.response || error;
+    }
+  };
+
+  const putActividadPagos = async (data) => {
+    // debugger;
+    try {
+      const response = await axios.put(
+        `${API_Services}/api/CRUDACTIVIDAD/ModificarActividad`,
+        data,
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status == 201) {
+        return response.data;
+      }
+    } catch (error) {
+      throw error.response || error;
+    }
+  };
+
+  const deleteAP = async (id) => {
+    try {
+      const response = await axios.delete(
+        `${API_Services}/api/CRUDACTIVIDAD/EliminarActividad/${id}`,
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status == 200) {
+        return response;
+      } else {
+        return response.data;
+      }
+    } catch (error) {
+      throw error.response || error;
+    }
+  };
+
   return {
+    //NOTE: PAGO
+    postActividadPagos,
+    putActividadPagos,
+    deleteAP,
     //NOTE. ActividadAsistencia
     updateAcAsis,
     deleteAcAsis,
@@ -419,6 +505,7 @@ export const UseMetods = () => {
     GetAllAsistencia,
     postAsistencia,
     deleteAsis,
+    updateAsis,
     //
     getPersonaConActividad,
     GetAllActividadAsistencia,

@@ -9,12 +9,7 @@ import { ModalAsistencia } from "./ModalAsistencia";
 import { ModelContext } from "../../Context/ModelContext";
 
 const Asistencia = () => {
-  const [datas, setDatas] = useState([]);
-  const [sortColumn, setSortColumn] = useState();
-  const [sortType, setSortType] = useState();
-  const [limit, setLimit] = useState(10);
-  const [page, setPage] = useState(1);
-  const { upDatos, setIsEdit, IsEdit } = useContext(ModelContext);
+  const { setIsEdit, IsEdit } = useContext(ModelContext);
   const [open, setOpen] = useState(false);
   const [size, setSize] = useState(false);
   const handleClose = () => {
@@ -35,33 +30,6 @@ const Asistencia = () => {
   const { data } = useQuery({
     queryKey: ["GetAllAsistencia"],
     queryFn: GetAllAsistencia,
-  });
-
-  const getData = () => {
-    if (sortColumn && sortType) {
-      return datas.sort((a, b) => {
-        let x = a[sortColumn];
-        let y = b[sortColumn];
-        if (typeof x === "string") {
-          x = x.charCodeAt();
-        }
-        if (typeof y === "string") {
-          y = y.charCodeAt();
-        }
-        if (sortType === "asc") {
-          return x - y;
-        } else {
-          return y - x;
-        }
-      });
-    }
-    return datas;
-  };
-
-  const listaDatas = getData().filter((v, i) => {
-    const start = limit * (page - 1);
-    const end = start + limit;
-    return i >= start && i <= end;
   });
 
   useEffect(() => {

@@ -14,6 +14,7 @@
     "@hookform/resolvers": "^3.9.0",
     "@tanstack/react-query": "^5.52.0",
     "axios": "^1.7.2",
+    "jwt-decode": "^4.0.0",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-bootstrap": "^2.9.0",

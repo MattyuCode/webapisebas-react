@@ -1,68 +1,40 @@
-import { FormControl } from "react-bootstrap"; 
-import { useEffect, useState } from "react";
+import { FormControl } from "react-bootstrap";
+import { useContext, useEffect, useState } from "react";
 import Modal from "../../Utilities/Modals";
 import { useNavigate } from "react-router-dom";
-import { UseMetods } from "../../Utilities/UseMetods";
 import { useQuery } from "@tanstack/react-query";
 import TableActividadPago from "./TableActividadPago";
+import { ModalAP } from "./ModalAP";
+import { UseMetods } from "../../Utilities/UseMetods";
+import { ModelContext } from "../../Context/ModelContext";
 
 const ActividadPago = () => {
-    const [datas, setDatas] = useState([]);
-    const [filterTarea, setFilterTarea] = useState([]);
-  const [sortColumn, setSortColumn] = useState();
-  const [sortType, setSortType] = useState();
-  const [loading, setLoading] = useState(false);
-  const [limit, setLimit] = useState(10);
-  const [page, setPage] = useState(1);
+  const { setIsEdit, IsEdit } = useContext(ModelContext);
   const [open, setOpen] = useState(false);
   const [size, setSize] = useState(false);
   const navigate = useNavigate();
-  const handleClose = () => setOpen(false);
+
+  const handleClose = () => {
+    setIsEdit(false);
+    setOpen(false);
+  };
+
+  const abriModal = () => handleOpen("lg");
+
+  useEffect(() => {
+    if (IsEdit) {
+      abriModal();
+    }
+  }, [IsEdit]);
+
   const handleOpen = (value) => {
     setSize(value);
     setOpen(true);
   };
-  const { GetAllActividadPago} = UseMetods();
-  const { data: datos, isSuccess} = useQuery({
+  const { GetAllActividadPago } = UseMetods();
+  const { data, isSuccess } = useQuery({
     queryKey: ["GetAllActividadPago"],
     queryFn: GetAllActividadPago,
-  });
-  console.log("----->", datos)
-  const modalSize = ["xs", "sm", "md", "lg", "full"].includes(size)
-  ? size
-  : "lg";
-
- useEffect(() => {
-    if (isSuccess) {
-      setDatas(datos?.Result);
-    }
-  }, []);
-
-  const getData = () => {
-    if (sortColumn && sortType) {
-      return datas.sort((a, b) => {
-        let x = a[sortColumn];
-        let y = b[sortColumn];
-        if (typeof x === "string") {
-          x = x.charCodeAt();
-        }
-        if (typeof y === "string") {
-          y = y.charCodeAt();
-        }
-        if (sortType === "asc") {
-          return x - y;
-        } else {
-          return y - x;
-        }
-      });
-    }
-    return datas;
-  };
-
-  const listaDatas = getData().filter((v, i) => {
-    const start = limit * (page - 1);
-    const end = start + limit;
-    return i >= start && i <= end;
   });
 
   const reporteActividadPago = () => {
@@ -73,16 +45,14 @@ const ActividadPago = () => {
     <div className="container">
       <div className="row">
         <div className="col-md-12">
-          <span className="titless text-center">
-            ACTIVIDADES DE PAGOS{" "}
-          </span>
+          <span className="titless text-center">ACTIVIDADES DE PAGOS </span>
         </div>
         <div className="col-md-12 mb-5">
           <div className="tab-contentAct card shadow">
             <div className="d-flex mb-3 justify-content-between  ">
               <div className="">
                 <button
-                  onClick={() => handleOpen("lg")}
+                  onClick={abriModal}
                   className="btn btnCrea btn-success text-decoration-none"
                   style={{ width: "100%" }}
                 >
@@ -111,10 +81,10 @@ const ActividadPago = () => {
               </div>
             </div>
 
-            <TableActividadPago data={datas} />
+            <TableActividadPago data={data} />
           </div>
 
-          {/* <Modals open={open} handleClose={handleClose} /> */}
+          <ModalAP open={open} handleClose={handleClose} size={size} />
         </div>
       </div>
     </div>

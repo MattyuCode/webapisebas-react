@@ -17,10 +17,11 @@ const PersonaSinPago = () => {
     const debounceBuscar = useDebounce(buscar, 500);
 
     const { data: datosP, isSuccess: SuccesRol } = useQuery({
-        queryKey: ["GetAllSinPago", idTipoPago],
-        queryFn: () => GetAllSinPago(idTipoPago),
-        enabled: !!idTipoPago,
-      });
+      queryKey: ["GetAllSinPago", idTipoPago],
+      queryFn: () => GetAllSinPago(idTipoPago),
+      enabled: !!idTipoPago,
+    });
+    console.log("🚀 ~ PersonaSinPago ~ datosP:", datosP)
 
       useEffect(() => {
         if (debounceBuscar) {
@@ -67,11 +68,11 @@ const PersonaSinPago = () => {
           {/* Si hay personas, las mostramos en la tabla */}
           {datosP?.data.length > 0 ? (
             datosP.data.map((persona) => (
-              <tr key={persona.idPersona}>
-                <td>{persona.idPersona}</td>
-                <td>{persona.nombreApellido}</td>
+              <tr key={persona.id_persona}>
+                <td>{persona.id_persona}</td>
+                <td>{persona.nombre_apellido}</td>
                 <td>{persona.cantidad}</td>
-                <td>{persona.nombreActividad}</td>
+                <td>{persona.nombre_actividad}</td>
                
               </tr>
             ))

@@ -13,8 +13,12 @@ import Swal from "sweetalert2";
 
 export const ModalAsistencia = ({ open, handleClose, size }) => {
   const queryClient = useQueryClient();
-  const { GetAllPersonas, GetAllActividadAsistencia, postAsistencia } =
-    UseMetods();
+  const {
+    GetAllPersonas,
+    GetAllActividadAsistencia,
+    postAsistencia,
+    updateAsis,
+  } = UseMetods();
   const cerrar = () => {
     handleClose();
     resetForm();
@@ -82,8 +86,6 @@ export const ModalAsistencia = ({ open, handleClose, size }) => {
 
   useEffect(() => {
     if (IsEdit) {
-      console.log("🚀 ~ useEffect ~ upDatos:", upDatos);
-
       setValue("nombreCompleto", upDatos.descripcion);
 
       const personaEncontrado = personaOptions.find(
@@ -126,27 +128,27 @@ export const ModalAsistencia = ({ open, handleClose, size }) => {
     },
   });
 
-  // const updatePersonaMutation = useMutation({
-  //   mutationFn: (dataNew) => modificarPersonas(dataNew),
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries("GetAllPersonas");
-  //     Swal.fire({
-  //       title: "Actualizado..!",
-  //       text: `Persona Actualizado`,
-  //       icon: "success",
-  //       showConfirmButton: false,
-  //       timer: 1500,
-  //     });
-  //     handleClose();
-  //     setIsEdit(false);
-  //     resetForm();
-  //   },
-  //   onError: (error) => {
-  //     toast.error(`${error.data?.mensaje}`, {
-  //       theme: "colored",
-  //     });
-  //   },
-  // });
+  const updatePersonaMutation = useMutation({
+    mutationFn: (dataNew) => updateAsis(dataNew),
+    onSuccess: () => {
+      queryClient.invalidateQueries("GetAllAsistencia");
+      Swal.fire({
+        title: "Actualizado..!",
+        text: `Datos Actualizado`,
+        icon: "success",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      handleClose();
+      setIsEdit(false);
+      resetForm();
+    },
+    onError: (error) => {
+      toast.error(`${error.data?.mensaje}`, {
+        theme: "colored",
+      });
+    },
+  });
 
   const resetForm = () => {
     reset();
@@ -154,7 +156,7 @@ export const ModalAsistencia = ({ open, handleClose, size }) => {
     setActividadSeleccionado(null);
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const obj = {
       idPersona: data.persona.value,
       tipoAsistencia: data.actividad.value,
@@ -162,18 +164,18 @@ export const ModalAsistencia = ({ open, handleClose, size }) => {
       idUsuarioRegistro: localStorage.getItem("idUsario"),
       idUsuarioModifica: localStorage.getItem("idUsario"),
     };
-    console.log("🚀 ~ onSubmit ~ obj:", obj);
-    // const update = {
-    //   idPersona: upDatos[0]?.idPersona,
-    //   nombreApellido: data.nombreCompleto,
-    //   telefono: data.telefono,
-    //   sector: data.sector.value,
-    //   dpi: data.numDpi,
-    // };
+    const update = {
+      idAsistencia: upDatos.idAsistencia,
+      idPersona: data.persona.value,
+      tipoAsistencia: data.actividad.value,
+      descripcion: data.nombreCompleto,
+      idUsuarioRegistro: localStorage.getItem("idUsario"),
+      idUsuarioModifica: localStorage.getItem("idUsario"),
+    };
     if (!IsEdit) {
-      postAsistenciaMutation.mutateAsync(obj);
+      await postAsistenciaMutation.mutateAsync(obj);
     } else {
-      // postPersonasMutation.mutateAsync(obj);
+      await updatePersonaMutation.mutateAsync(update);
     }
   };
 
@@ -199,10 +201,12 @@ export const ModalAsistencia = ({ open, handleClose, size }) => {
                 <div className="row">
                   <div className="col-md-6">
                     <div className="form-outline mb-5">
-                      <label className="form-label h5">Nombre completo</label>
+                      <label className="form-label h5">
+                        Descripción de pago
+                      </label>
                       <input
                         type="text"
-                        placeholder="Nombre completo"
+                        placeholder="Descripción de pago"
                         className="form-control"
                         {...register("nombreCompleto")}
                       />

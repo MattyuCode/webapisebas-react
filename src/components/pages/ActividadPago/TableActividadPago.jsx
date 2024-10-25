@@ -1,17 +1,22 @@
 import { Button, Pagination, Table } from "rsuite";
+import React, { useContext, useState } from "react";
+import { ModelContext } from "../../Context/ModelContext";
+import { UseMetods } from "../../Utilities/UseMetods";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Swal from "sweetalert2";
 
-import React, { useState } from "react";
+const TableActividadPago = ({ data }) => {
+  const { Column, HeaderCell, Cell } = Table;
+  const [limit, setLimit] = useState(10);
+  const [page, setPage] = useState(1);
+  const [sortColumn, setSortColumn] = useState();
+  const [sortType, setSortType] = useState();
+  const [loading, setLoading] = useState(false);
+  const { setUpDatos, setIsEdit } = useContext(ModelContext);
+  const queryClient = useQueryClient();
+  const { deleteAP } = UseMetods();
 
-const TableActividadPago = ({data}) =>{
-// console.log("🚀 ~ TableActividadPago ~ data:", data);
-const { Column, HeaderCell, Cell } = Table;
-const [limit, setLimit] = useState(10);
-const [page, setPage] = useState(1);
-const [sortColumn, setSortColumn] = useState();
-const [sortType, setSortType] = useState();
-const [loading, setLoading] = useState(false);
-
-const handleChangeLimit = (dataKey) => {
+  const handleChangeLimit = (dataKey) => {
     setPage(1);
     setLimit(dataKey);
   };
@@ -25,12 +30,60 @@ const handleChangeLimit = (dataKey) => {
     }, 500);
   };
 
+  const getData = () => {
+    let filteredData = data;
+    if (sortColumn && sortType) {
+      filteredData = filteredData.sort((a, b) => {
+        let x = a[sortColumn];
+        let y = b[sortColumn];
+        if (typeof x === "string") {
+          x = x.charCodeAt();
+        }
+        if (typeof y === "string") {
+          y = y.charCodeAt();
+        }
+        return sortType === "asc" ? x - y : y - x;
+      });
+    }
+    const start = limit * (page - 1);
+    const end = start + limit;
+    return filteredData?.slice(start, end);
+  };
+
+  const listaDatas = getData();
+
+  const actualizar = (data) => {
+    setUpDatos(data);
+    setIsEdit(true);
+  };
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => deleteAP(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries("GetAllActividadPago");
+      Swal.fire({
+        title: "Borrado...!",
+        text: "Datos borrado con exito",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    },
+    onError: (error) => {
+      Swal.fire({
+        title: "Error",
+        text: `${error.data?.Result}`,
+        icon: "error",
+      });
+    },
+  });
+
   return (
     <div>
       <Table
         appearance={"primary"}
         height={400}
-        data={data}
+        data={listaDatas}
         sortColumn={sortColumn}
         sortType={sortType}
         onSortColumn={handleSortColumn}
@@ -49,19 +102,19 @@ const handleChangeLimit = (dataKey) => {
       >
         <Column width={250} sortable resizable>
           <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
-          idActividadPago
+            idActividadPago
           </HeaderCell>
           <Cell dataKey="idActividadPago" />
         </Column>
         <Column width={250} sortable resizable>
           <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
-          nombreActividad
+            nombreActividad
           </HeaderCell>
           <Cell dataKey="nombreActividad" />
         </Column>
         <Column width={250} sortable resizable>
           <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
-          cantidad 
+            cantidad
           </HeaderCell>
           <Cell dataKey="cantidad" />
         </Column>
@@ -78,7 +131,7 @@ const handleChangeLimit = (dataKey) => {
                   color="cyan"
                   disabled={rowData.TOTAL_SUBTAREAS > 0}
                   appearance="primary"
-                //   onClick={() => ActualizarDatos(rowData)}
+                  onClick={() => actualizar(rowData)}
                 >
                   Editar
                 </Button>
@@ -99,9 +152,11 @@ const handleChangeLimit = (dataKey) => {
                       confirmButtonText: "Sí, eliminar",
                       cancelButtonText: "Cancelar",
                       reverseButtons: true,
-                    }).then((result) => {
+                    }).then(async (result) => {
                       if (result.isConfirmed) {
-                        // deleteMutation.mutateAsync(rowData?.idPersona);
+                        await deleteMutation.mutateAsync(
+                          rowData?.idActividadPago
+                        );
                       } else if (result.dismiss === Swal.DismissReason.cancel) {
                         Swal.fire(
                           "Cancelado",
@@ -141,6 +196,5 @@ const handleChangeLimit = (dataKey) => {
       </div>
     </div>
   );
-
-}; 
+};
 export default TableActividadPago;

@@ -44,13 +44,18 @@ ul {
   list-style: none;
 }
 
+body{
+background: #d9d9d9 !important;
+}
+
 main {
   position: relative;
   margin: var(--header-height) 0 0 0;
   padding: 0 1rem;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-family: 'Nunito Sans', sans-serif;
   transition: all 0.5s;
+  height: 100vh;
 }
 
 header {
@@ -166,8 +171,8 @@ header {
   display: grid;
   grid-template-columns: max-content max-content;
   padding: 0.5rem 0 0.5rem 1.5rem;
-  column-gap: 2rem;
-  /* color: white; */
+  column-gap: 0.9rem;
+  color: white;
   color: var(--white-color-alt);
   position: relative;
   border-start-end-radius: 13px;
@@ -200,7 +205,7 @@ header {
 .nav-links {
   color: var(--white-color-alt);
   transition: all 0.5s;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   align-items: center;
   position: relative;
 }

@@ -12,7 +12,6 @@ const TablePersonas = ({ data }) => {
   const [page, setPage] = useState(1);
   const [sortColumn, setSortColumn] = useState();
   const { eliminarPersonas } = UseMetods();
-
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [sortType, setSortType] = useState();
@@ -60,12 +59,34 @@ const TablePersonas = ({ data }) => {
     },
   });
 
+  const getData = () => {
+    let filteredData = data;
+    if (sortColumn && sortType) {
+      filteredData = filteredData.sort((a, b) => {
+        let x = a[sortColumn];
+        let y = b[sortColumn];
+        if (typeof x === "string") {
+          x = x.charCodeAt();
+        }
+        if (typeof y === "string") {
+          y = y.charCodeAt();
+        }
+        return sortType === "asc" ? x - y : y - x;
+      });
+    }
+    const start = limit * (page - 1);
+    const end = start + limit;
+    return filteredData?.slice(start, end);
+  };
+
+  const listaDatas = getData();
+
   return (
     <div>
       <Table
         appearance={"primary"}
         height={400}
-        data={data}
+        data={listaDatas}
         sortColumn={sortColumn}
         sortType={sortType}
         onSortColumn={handleSortColumn}
@@ -141,7 +162,7 @@ const TablePersonas = ({ data }) => {
                     // console.log(rowData)
                     Swal.fire({
                       title: "¿Está seguro de eliminar este registro?",
-                      text: "Esta acción no se puede deshacer",
+                      texrt: "Esta acción no se puede deshacer",
                       icon: "warning",
                       showCancelButton: true,
                       confirmButtonColor: "#28a745",
