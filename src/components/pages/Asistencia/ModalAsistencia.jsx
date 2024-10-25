@@ -19,6 +19,7 @@ export const ModalAsistencia = ({ open, handleClose, size }) => {
     postAsistencia,
     updateAsis,
   } = UseMetods();
+  
   const cerrar = () => {
     handleClose();
     resetForm();

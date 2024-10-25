@@ -4,40 +4,42 @@ import { Table, FormControl, Button, Spinner } from "react-bootstrap";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UseMetods } from "../../Utilities/UseMetods";
 import { useDebounce } from "../../Hooks/useDebounce";
+import { useNavigate } from "react-router-dom";
 
 const PersonaSinPago = () => {
-    const API_Services = import.meta.env.VITE_APP_MY_API;
-    const [idTipoPago, setIdTipoPago] = useState ([]);
-    const [personaSinPago, setPersonaSinPago] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const {GetAllSinPago } = UseMetods();
-    const [buscar, setBuscar] = useState("");
+  const API_Services = import.meta.env.VITE_APP_MY_API;
+  const [idTipoPago, setIdTipoPago] = useState([]);
+  const [personaSinPago, setPersonaSinPago] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const { GetAllSinPago } = UseMetods();
+  const [buscar, setBuscar] = useState("");
+  const navigate = useNavigate();
 
-    const debounceBuscar = useDebounce(buscar, 500);
+  const debounceBuscar = useDebounce(buscar, 500);
 
-    const { data: datosP, isSuccess: SuccesRol } = useQuery({
-      queryKey: ["GetAllSinPago", idTipoPago],
-      queryFn: () => GetAllSinPago(idTipoPago),
-      enabled: !!idTipoPago,
-    });
-    console.log("🚀 ~ PersonaSinPago ~ datosP:", datosP)
+  const { data: datosP, isSuccess: SuccesRol } = useQuery({
+    queryKey: ["GetAllSinPago", idTipoPago],
+    queryFn: () => GetAllSinPago(idTipoPago),
+    enabled: !!idTipoPago,
+  });
 
-      useEffect(() => {
-        if (debounceBuscar) {
-          setIdTipoPago(debounceBuscar);
-        } else {
-          setIdTipoPago("");
-        }
-      }, [debounceBuscar]);
+  useEffect(() => {
+    if (debounceBuscar) {
+      setIdTipoPago(debounceBuscar);
+    } else {
+      setIdTipoPago("");
+    }
+  }, [debounceBuscar]);
 
-      const handleGrupoChange = (e) => {
-        const inputValue = e.target.value;
-        console.log("🚀 ~ handleGrupoChange ~ inputValue:", inputValue);
-        setBuscar(inputValue);
-      };
+  const handleGrupoChange = (e) => {
+    const inputValue = e.target.value;
+    console.log("🚀 ~ handleGrupoChange ~ inputValue:", inputValue);
+    setBuscar(inputValue);
+  };
 
-      
+  const regresar = () => navigate("/actividadPago");
+
   return (
     <div className="container">
       <h2>BUSCAR PAGOS CON PERSONAS PENDIENTES</h2>
@@ -61,7 +63,6 @@ const PersonaSinPago = () => {
             <th>Nombre y Apellido</th>
             <th>CANTIDAD</th>
             <th>Nombre ACTIVIDAD PAGO</th>
-            
           </tr>
         </thead>
         <tbody>
@@ -73,7 +74,6 @@ const PersonaSinPago = () => {
                 <td>{persona.nombre_apellido}</td>
                 <td>{persona.cantidad}</td>
                 <td>{persona.nombre_actividad}</td>
-               
               </tr>
             ))
           ) : (
@@ -85,7 +85,11 @@ const PersonaSinPago = () => {
           )}
         </tbody>
       </Table>
+
+      <button className="btn btn-danger" onClick={regresar}>
+        Regresar
+      </button>
     </div>
   );
-}
+};
 export default PersonaSinPago;
