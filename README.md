@@ -1,3 +1,6 @@
+## Publicar MYSQL en Railway
+* Link: https://www.youtube.com/watch?v=SsDAeDDSuN0
+
 ## Pasos para el deploy en Railway
 ```git
    npm run build

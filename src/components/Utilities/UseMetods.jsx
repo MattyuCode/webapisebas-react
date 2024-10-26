@@ -491,8 +491,91 @@ export const UseMetods = () => {
     }
   };
 
+  const GetAllPago = async () => {
+    try {
+      const response = await axios.get(
+        `${API_Services}/api/CRUDPAGO/GetAllPago`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (response.status === 200) {
+        return response.data;
+      }
+    } catch (error) {}
+  };
+
+  const insertPago = async (data) => {
+    // debugger;
+    try {
+      const response = await axios.post(
+        `${API_Services}/api/CRUDPAGO/CrearPago`,
+        data,
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status == 201) {
+        return response.data;
+      }
+    } catch (error) {
+      throw error.response || error;
+    }
+  };
+
+  const updatePago = async (data) => {
+    // debugger;
+    try {
+      const response = await axios.put(
+        `${API_Services}/api/CRUDPAGO/ModificarPago`,
+        data,
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status == 201) {
+        return response.data;
+      }
+    } catch (error) {
+      throw error.response || error;
+    }
+  };
+
+  const deletePago = async (id) => {
+    try {
+      const response = await axios.delete(
+        `${API_Services}/api/CRUDPAGO/EliminarPago/${id}`,
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status == 200) {
+        return response;
+      } else {
+        return response.data;
+      }
+    } catch (error) {
+      throw error.response || error;
+    }
+  };
+
   return {
     //NOTE: PAGO
+    GetAllPago,
+    insertPago,
+    updatePago,
+    deletePago,
+    //NOTE: PAGOACTIVIDAD
     postActividadPagos,
     putActividadPagos,
     deleteAP,
