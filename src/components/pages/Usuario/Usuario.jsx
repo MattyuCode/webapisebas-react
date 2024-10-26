@@ -272,7 +272,7 @@ const Usuario = () => {
                         Editar
                       </Button>
                       {"   | "}
-                      <Button
+                      {/* <Button
                         size="sm"
                         color="red"
                         appearance="primary"
@@ -311,7 +311,7 @@ const Usuario = () => {
                         }}
                       >
                         Eliminar
-                      </Button>
+                      </Button> */}
                     </>
                   )}
                 </Cell>

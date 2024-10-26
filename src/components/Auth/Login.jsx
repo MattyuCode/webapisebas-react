@@ -35,7 +35,7 @@ const Login = () => {
 
       if (response.status === 200) {
         const data = response.data;
-        console.log(data.access_token);
+        // console.log(data.access_token);
         navigate("/home");
         setTipoUser(form.username);
         localStorage.setItem("access_token", data.access_token);

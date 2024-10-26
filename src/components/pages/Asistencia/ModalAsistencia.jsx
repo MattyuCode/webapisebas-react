@@ -19,7 +19,7 @@ export const ModalAsistencia = ({ open, handleClose, size }) => {
     postAsistencia,
     updateAsis,
   } = UseMetods();
-  
+
   const cerrar = () => {
     handleClose();
     resetForm();
@@ -56,23 +56,23 @@ export const ModalAsistencia = ({ open, handleClose, size }) => {
   }));
 
   const schema = yup.object().shape({
-    nombreCompleto: yup.string().required("El nombre completo es requerido!"),
+    nombreCompleto: yup.string().required("El nombre es requerido!"),
     persona: yup
       .object()
       .shape({
-        value: yup.string().required("El sector es requerido!"),
+        value: yup.string().required("La persona es requerido!"),
         label: yup.string().required(),
       })
       .nullable()
-      .required("El sector es requerido!"),
+      .required("La persona es requerido!"),
     actividad: yup
       .object()
       .shape({
-        value: yup.string().required("El sector es requerido!"),
+        value: yup.string().required("La actividad es requerido!"),
         label: yup.string().required(),
       })
       .nullable()
-      .required("El sector es requerido!"),
+      .required("La actividad es requerido!"),
   });
 
   const {
