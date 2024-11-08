@@ -4,9 +4,9 @@ import { useContext, useEffect, useState } from "react";
 import Modals from "../../Utilities/Modals";
 import { useQuery } from "@tanstack/react-query";
 import { UseMetods } from "../../Utilities/UseMetods";
-import { GridAsistencia } from "./GridAsistencia";
 import { ModalAsistencia } from "./ModalAsistencia";
 import { ModelContext } from "../../Context/ModelContext";
+import { GridAsistencia} from "./GridAsistencia"
 
 const Asistencia = () => {
   const { setIsEdit, IsEdit } = useContext(ModelContext);
@@ -68,7 +68,7 @@ const Asistencia = () => {
               </div>
             </div>
 
-            <GridAsistenncia data={data?.Result} />
+            <GridAsistencia data={data?.Result} />
           </div>
 
           <ModalAsistencia open={open} handleClose={handleClose} size={size} />
