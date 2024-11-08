@@ -41,6 +41,8 @@ export const Sidebar = ({ show, setShow }) => {
       // );
       // seIdRole(result.idRol);
       seIdRole(rolEncontrado?.nombreRol);
+      //NOTE: Guardar idRol en LocalStorage
+      localStorage.setItem("idRolUsuario", rolEncontrado?.nombreRol);
     }
   }, [datos, isSuccess]);
 
@@ -151,7 +153,8 @@ export const Sidebar = ({ show, setShow }) => {
 
               <Link
                 to="/actividadAsistencia"
-                className={`nav-links ${isActive === "/actividadAsistencia" ? "active" : ""
+                className={`nav-links ${
+                  isActive === "/actividadAsistencia" ? "active" : ""
                 }`}
                 onClick={() => handleClickPath("/actividadAsistencia")}
               >
@@ -161,15 +164,14 @@ export const Sidebar = ({ show, setShow }) => {
 
               <Link
                 to="/actividadPago"
-                className={`nav-links ${isActive === "/actividadPago" ? "active" : ""
+                className={`nav-links ${
+                  isActive === "/actividadPago" ? "active" : ""
                 }`}
                 onClick={() => handleClickPath("/actividadPago")}
               >
                 <i className="fas fa-user-check nav-link-icon"></i>
                 <span className="nav-link-name">ACTIVIDAD PAGO</span>
               </Link>
-
-            
 
               {/* <Link
                 to="/personas-sin-pago"
@@ -180,8 +182,6 @@ export const Sidebar = ({ show, setShow }) => {
                 <i className="fas fa-user-check nav-link-icon"></i>
                 <span className="nav-link-name">REPORTE DE ACTIVIDAD PAGO</span>
               </Link> */}
-
-             
             </div>
           </div>
 

@@ -203,11 +203,11 @@ export const ModalAsistencia = ({ open, handleClose, size }) => {
                   <div className="col-md-6">
                     <div className="form-outline mb-5">
                       <label className="form-label h5">
-                        Descripción de pago
+                        Descripción de Asistencia
                       </label>
                       <input
                         type="text"
-                        placeholder="Descripción de pago"
+                        placeholder="Descripción asistencia"
                         className="form-control"
                         {...register("nombreCompleto")}
                       />

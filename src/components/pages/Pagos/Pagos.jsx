@@ -16,6 +16,7 @@ const Pagos = () => {
     queryKey: ["GetAllPago"],
     queryFn: GetAllPago,
   });
+  console.log("🚀 ~ Pagos ~ data:", data)
 
   const handleClose = () => {
     setIsEdit(false);
@@ -61,13 +62,13 @@ const Pagos = () => {
             </div>
 
             <div className="">
-              <FormControl
+              {/* <FormControl
                 type="search"
                 placeholder="Buscar Personas"
                 className="inpuBuscar"
                 style={{ width: "100%" }}
                 // onChange={handleFilter}
-              />
+              /> */}
             </div>
           </div>
         </div>

@@ -65,10 +65,10 @@ const ModalPago = ({ open, handleClose, size }) => {
       })
       .nullable()
       .required("La actividad es requerido!"),
-    cantidad: yup
-      .number()
-      .typeError("Debe ser un número")
-      .positive("La cantidad debe ser positiva"),
+    // cantidad: yup
+    //   .number()
+    //   .typeError("Debe ser un número")
+    //   .positive("La cantidad debe ser positiva"),
   });
 
   const {
@@ -158,7 +158,7 @@ const ModalPago = ({ open, handleClose, size }) => {
       idPersona: data.persona.value,
       idTipoPago: data.actividad.value,
       descripcion: data.descrip,
-      cantidad_Q: data.cantidad,
+      // cantidad_Q: data.cantidad,
       idUsuarioRegistro: localStorage.getItem("idUsario"),
       idUsuarioModifica: localStorage.getItem("idUsario"),
     };
@@ -167,7 +167,7 @@ const ModalPago = ({ open, handleClose, size }) => {
       idPersona: data.persona.value,
       idTipoPago: data.actividad.value,
       descripcion: data.descrip,
-      cantidad_Q: data.cantidad,
+      // cantidad_Q: data.cantidad,
       idUsuarioRegistro: localStorage.getItem("idUsario"),
       idUsuarioModifica: localStorage.getItem("idUsario"),
     };
@@ -269,7 +269,7 @@ const ModalPago = ({ open, handleClose, size }) => {
                     </div>
                   </div>
 
-                  <div className="col-md-6">
+                  {/* <div className="col-md-6">
                     <div className="form-outline mb-5">
                       <label className="form-label h5">Cantidad</label>
                       <input
@@ -282,7 +282,7 @@ const ModalPago = ({ open, handleClose, size }) => {
                         <p className="text-danger">{errors.cantidad.message}</p>
                       )}
                     </div>
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="d-flex justify-content-center">

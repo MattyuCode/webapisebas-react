@@ -138,7 +138,7 @@ const ModalAcAsis = ({ open, handleClose, size }) => {
                 &nbsp; &nbsp;
                 <Button type="submit" color="green" appearance="primary">
                   <i className="fas fa-save"></i> &nbsp;{" "}
-                  {/* {IsEdit ? "Editar" : "Guardar"} */}Add
+                  {/* {IsEdit ? "Editar" : "Guardar"} */}Agregar nuevo
                 </Button>
               </div>
             </form>

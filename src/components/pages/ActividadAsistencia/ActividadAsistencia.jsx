@@ -35,50 +35,31 @@ const ActividadAsistencia = () => {
     queryFn: GetAllActividadAsistencia,
   });
 
+  const reporteActividadAsistencia = () => navigate("/personas-sin-asistencia");
+  const abriModal = () => handleOpen("xs");
+
   useEffect(() => {
     if (isSuccess) {
       setDatas(datos?.Result);
     }
-  }, []);
-
-  const getData = () => {
-    if (sortColumn && sortType) {
-      return datos?.Result?.sort((a, b) => {
-        let x = a[sortColumn];
-        let y = b[sortColumn];
-        if (typeof x === "string") {
-          x = x.charCodeAt();
-        }
-        if (typeof y === "string") {
-          y = y.charCodeAt();
-        }
-        if (sortType === "asc") {
-          return x - y;
-        } else {
-          return y - x;
-        }
-      });
-    }
-    return datos?.Result;
-  };
-
-  const listaDatas = getData()?.filter((v, i) => {
-    const start = limit * (page - 1);
-    const end = start + limit;
-    return i >= start && i <= end;
-  });
-
-  const reporteActividadAsistencia = () => {
-    navigate("/personas-sin-asistencia");
-  };
-
-  const abriModal = () => handleOpen("xs");
-
-  useEffect(() => {
     if (IsEdit) {
       abriModal();
     }
-  }, [IsEdit]);
+  }, [IsEdit, isSuccess, datos]);
+
+  const handleFilter = (e) => {
+    const searchValue = e.target.value.toLowerCase();
+    if (searchValue === "") {
+      setDatas(datos?.Result);
+    } else {
+      const newData = datos?.Result?.filter(
+        (item) => item.nombreActividad.toLowerCase().includes(searchValue)
+        // item.nombreUsuario.toLowerCase().includes(searchValue) ||
+        // item.email.toLowerCase().includes(searchValue)
+      );
+      setDatas(newData);
+    }
+  };
 
   return (
     <div className="container">
@@ -118,12 +99,12 @@ const ActividadAsistencia = () => {
                   placeholder="Buscar Actividad de Asistencia"
                   className="inpuBuscar"
                   style={{ width: "100%" }}
-                  // onChange={handleFilter}
+                  onChange={handleFilter}
                 />
               </div>
             </div>
 
-            <TableActividadAsistencia data={datos?.Result} />
+            <TableActividadAsistencia data={datas} />
           </div>
 
           <ModalAcAsis open={open} handleClose={handleClose} size={size} />

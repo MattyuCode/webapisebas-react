@@ -68,7 +68,7 @@ const Asistencia = () => {
               </div>
             </div>
 
-            <GridAsistencia data={data?.Result} />
+            <GridAsistenncia data={data?.Result} />
           </div>
 
           <ModalAsistencia open={open} handleClose={handleClose} size={size} />

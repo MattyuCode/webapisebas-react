@@ -70,13 +70,15 @@ const Personas = () => {
             <div className="tab-contentAct card shadow">
               <div className="d-flex mb-3 justify-content-between  ">
                 <div className="">
-                  <button
-                    onClick={abriModal}
-                    className="btn btnCrea btn-success text-decoration-none"
-                    style={{ width: "100%" }}
-                  >
-                    Registrar Personas
-                  </button>
+                  {localStorage.getItem("idRolUsuario") === "ADMIN" && (
+                    <button
+                      onClick={abriModal}
+                      className="btn btnCrea btn-success text-decoration-none"
+                      style={{ width: "100%" }}
+                    >
+                      Registrar Personas
+                    </button>
+                  )}
                 </div>
                 <div className="">
                   <button

@@ -143,60 +143,66 @@ export const GridAsistencia = ({ data }) => {
           </HeaderCell>
           <Cell dataKey="descripcion" />
         </Column>
+        {localStorage.getItem("idRolUsuario") === "ADMIN" && (
+          <Column width={230} fixed="right" align="center">
+            <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
+              ACCIONES
+            </HeaderCell>
+            <Cell style={{ padding: "6px", textAlign: "center" }}>
+              {(rowData) => (
+                <>
+                  <Button
+                    size="sm"
+                    color="cyan"
+                    // disabled={rowData.TOTAL_SUBTAREAS > 0}
+                    onClick={() => actualizar(rowData)}
+                    appearance="primary"
+                  >
+                    Editar
+                  </Button>
+                  {"   | "}
 
-        <Column width={230} fixed="right" align="center">
-          <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
-            ACCIONES
-          </HeaderCell>
-          <Cell style={{ padding: "6px", textAlign: "center" }}>
-            {(rowData) => (
-              <>
-                <Button
-                  size="sm"
-                  color="cyan"
-                  // disabled={rowData.TOTAL_SUBTAREAS > 0}
-                  onClick={() => actualizar(rowData)}
-                  appearance="primary"
-                >
-                  Editar
-                </Button>
-                {"   | "}
-                <Button
-                  size="sm"
-                  color="red"
-                  appearance="primary"
-                  onClick={() => {
-                    Swal.fire({
-                      title: "¿Está seguro de eliminar este registro?",
-                      text: "Esta acción no se puede deshacer",
-                      icon: "warning",
-                      showCancelButton: true,
-                      confirmButtonColor: "#28a745",
-                      cancelButtonColor: "#dc3545",
-                      confirmButtonText: "Sí, eliminar",
-                      cancelButtonText: "Cancelar",
-                      reverseButtons: true,
-                    }).then(async (result) => {
-                      if (result.isConfirmed) {
-                        await deleteMutation.mutateAsync(rowData?.idAsistencia);
-                      } else if (result.dismiss === Swal.DismissReason.cancel) {
-                        Swal.fire({
-                          title: "Cancelado",
-                          text: "El detalle no ha sido eliminado.",
-                          icon: "error",
-                          showConfirmButton: false,
-                          timer: 1500,
-                        });
-                      }
-                    });
-                  }}
-                >
-                  Eliminar
-                </Button>
-              </>
-            )}
-          </Cell>
-        </Column>
+                  <Button
+                    size="sm"
+                    color="red"
+                    appearance="primary"
+                    onClick={() => {
+                      Swal.fire({
+                        title: "¿Está seguro de eliminar este registro?",
+                        text: "Esta acción no se puede deshacer",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#28a745",
+                        cancelButtonColor: "#dc3545",
+                        confirmButtonText: "Sí, eliminar",
+                        cancelButtonText: "Cancelar",
+                        reverseButtons: true,
+                      }).then(async (result) => {
+                        if (result.isConfirmed) {
+                          await deleteMutation.mutateAsync(
+                            rowData?.idAsistencia
+                          );
+                        } else if (
+                          result.dismiss === Swal.DismissReason.cancel
+                        ) {
+                          Swal.fire({
+                            title: "Cancelado",
+                            text: "El detalle no ha sido eliminado.",
+                            icon: "error",
+                            showConfirmButton: false,
+                            timer: 1500,
+                          });
+                        }
+                      });
+                    }}
+                  >
+                    Eliminar
+                  </Button>
+                </>
+              )}
+            </Cell>
+          </Column>
+        )}
       </Table>
 
       <div style={{ padding: 20 }}>

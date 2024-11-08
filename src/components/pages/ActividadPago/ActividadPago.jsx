@@ -13,6 +13,13 @@ const ActividadPago = () => {
   const [open, setOpen] = useState(false);
   const [size, setSize] = useState(false);
   const navigate = useNavigate();
+  const [allDatos, setAllDatos] = useState([]);
+
+  const { GetAllActividadPago } = UseMetods();
+  const { data, isSuccess } = useQuery({
+    queryKey: ["GetAllActividadPago"],
+    queryFn: GetAllActividadPago,
+  });
 
   const handleClose = () => {
     setIsEdit(false);
@@ -22,23 +29,35 @@ const ActividadPago = () => {
   const abriModal = () => handleOpen("lg");
 
   useEffect(() => {
+    if (isSuccess) {
+      setAllDatos(data);
+    }
     if (IsEdit) {
       abriModal();
     }
-  }, [IsEdit]);
+  }, [IsEdit, isSuccess, data]);
 
   const handleOpen = (value) => {
     setSize(value);
     setOpen(true);
   };
-  const { GetAllActividadPago } = UseMetods();
-  const { data, isSuccess } = useQuery({
-    queryKey: ["GetAllActividadPago"],
-    queryFn: GetAllActividadPago,
-  });
 
   const reporteActividadPago = () => {
     navigate("/personas-sin-pago");
+  };
+
+  const handleFilter = (e) => {
+    const searchValue = e.target.value.toLowerCase();
+    if (searchValue === "") {
+      setAllDatos(data);
+    } else {
+      const newData = data?.filter(
+        (item) => item.nombreActividad.toLowerCase().includes(searchValue)
+        // item.nombreUsuario.toLowerCase().includes(searchValue) ||
+        // item.email.toLowerCase().includes(searchValue)
+      );
+      setAllDatos(newData);
+    }
   };
 
   return (
@@ -76,12 +95,12 @@ const ActividadPago = () => {
                   placeholder="Buscar Actividad de Asistencia"
                   className="inpuBuscar"
                   style={{ width: "100%" }}
-                  // onChange={handleFilter}
+                  onChange={handleFilter}
                 />
               </div>
             </div>
 
-            <TableActividadPago data={data} />
+            <TableActividadPago data={allDatos} />
           </div>
 
           <ModalAP open={open} handleClose={handleClose} size={size} />

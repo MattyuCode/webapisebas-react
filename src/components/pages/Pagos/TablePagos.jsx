@@ -114,6 +114,20 @@ const TablePagos = ({ data }) => {
 
         <Column width={250} sortable resizable align="center">
           <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
+            ID Personas
+          </HeaderCell>
+          <Cell>{(rowData) => rowData.idPersona?.idPersona}</Cell>
+        </Column>
+
+        <Column width={250} sortable resizable align="center">
+          <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
+            Nombre Persona
+          </HeaderCell>
+          <Cell>{(rowData) => rowData.idPersona?.nombreApellido}</Cell>
+        </Column>
+
+        <Column width={250} sortable resizable align="center">
+          <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
             nombreActividad
           </HeaderCell>
           <Cell dataKey="idTipoPago.nombreActividad" />
@@ -133,58 +147,62 @@ const TablePagos = ({ data }) => {
           <Cell dataKey="fechaRegistro" />
         </Column>
 
-        <Column width={230} fixed="right" align="center">
-          <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
-            ACCIONES
-          </HeaderCell>
-          <Cell style={{ padding: "6px", textAlign: "center" }}>
-            {(rowData) => (
-              <>
-                <Button
-                  size="sm"
-                  color="cyan"
-                  disabled={rowData.TOTAL_SUBTAREAS > 0}
-                  appearance="primary"
-                  onClick={() => ActualizarDatos(rowData)}
-                >
-                  Editar
-                </Button>
-                {"   | "}
-                <Button
-                  size="sm"
-                  color="red"
-                  appearance="primary"
-                  onClick={() => {
-                    // console.log(rowData)
-                    Swal.fire({
-                      title: "¿Está seguro de eliminar este registro?",
-                      texrt: "Esta acción no se puede deshacer",
-                      icon: "warning",
-                      showCancelButton: true,
-                      confirmButtonColor: "#28a745",
-                      cancelButtonColor: "#dc3545",
-                      confirmButtonText: "Sí, eliminar",
-                      cancelButtonText: "Cancelar",
-                      reverseButtons: true,
-                    }).then((result) => {
-                      if (result.isConfirmed) {
-                        deleteMutation.mutateAsync(rowData?.idPago);
-                      } else if (result.dismiss === Swal.DismissReason.cancel) {
-                        Swal.fire(
-                          "Cancelado",
-                          "El registro está seguro 🗃",
-                          "error"
-                        );
-                      }
-                    });
-                  }}
-                >
-                  Eliminar
-                </Button>
-              </>
-            )}
-          </Cell>
-        </Column>
+        {localStorage.getItem("idRolUsuario") === "ADMIN" && (
+          <Column width={230} fixed="right" align="center">
+            <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
+              ACCIONES
+            </HeaderCell>
+            <Cell style={{ padding: "6px", textAlign: "center" }}>
+              {(rowData) => (
+                <>
+                  <Button
+                    size="sm"
+                    color="cyan"
+                    disabled={rowData.TOTAL_SUBTAREAS > 0}
+                    appearance="primary"
+                    onClick={() => ActualizarDatos(rowData)}
+                  >
+                    Editar
+                  </Button>
+                  {"   | "}
+                  <Button
+                    size="sm"
+                    color="red"
+                    appearance="primary"
+                    onClick={() => {
+                      // console.log(rowData)
+                      Swal.fire({
+                        title: "¿Está seguro de eliminar este registro?",
+                        texrt: "Esta acción no se puede deshacer",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#28a745",
+                        cancelButtonColor: "#dc3545",
+                        confirmButtonText: "Sí, eliminar",
+                        cancelButtonText: "Cancelar",
+                        reverseButtons: true,
+                      }).then((result) => {
+                        if (result.isConfirmed) {
+                          deleteMutation.mutateAsync(rowData?.idPago);
+                        } else if (
+                          result.dismiss === Swal.DismissReason.cancel
+                        ) {
+                          Swal.fire(
+                            "Cancelado",
+                            "El registro está seguro 🗃",
+                            "error"
+                          );
+                        }
+                      });
+                    }}
+                  >
+                    Eliminar
+                  </Button>
+                </>
+              )}
+            </Cell>
+          </Column>
+        )}
       </Table>
 
       <div style={{ padding: 20 }}>
