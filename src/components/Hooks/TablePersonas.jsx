@@ -4,6 +4,7 @@ import { Button, Pagination, Table } from "rsuite";
 import { ModelContext } from "../Context/ModelContext";
 import { UseMetods } from "../Utilities/UseMetods";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 const TablePersonas = ({ data }) => {
   const { Column, HeaderCell, Cell } = Table;
@@ -15,6 +16,7 @@ const TablePersonas = ({ data }) => {
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [sortType, setSortType] = useState();
+  const navigate = useNavigate();
 
   const handleChangeLimit = (dataKey) => {
     setPage(1);
@@ -80,6 +82,13 @@ const TablePersonas = ({ data }) => {
   };
 
   const listaDatas = getData();
+  const reporteAsistencia = (data) => {
+    navigate(`/personaConActividad/${data?.idPersona}`);
+  };
+
+  const reporteActividadPago = (data) => {
+    navigate(`/personaConActividadPagoPendiente/${data?.idPersona}`);
+  };
 
   return (
     <div>
@@ -103,34 +112,34 @@ const TablePersonas = ({ data }) => {
         affixHeader
         affixHorizontalScrollbar
       >
-        <Column width={250} sortable resizable>
+        <Column width={150} sortable resizable>
           <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
             idPersona
           </HeaderCell>
           <Cell dataKey="idPersona" />
         </Column>
-        <Column width={250} sortable resizable>
+        <Column width={200} sortable resizable>
           <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
             nombreApellido
           </HeaderCell>
           <Cell dataKey="nombreApellido" />
         </Column>
 
-        <Column width={250} sortable resizable align="center">
+        <Column width={150} sortable resizable align="center">
           <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
             telefono
           </HeaderCell>
           <Cell dataKey="telefono" />
         </Column>
 
-        <Column width={200} sortable resizable align="center">
+        <Column width={100} sortable resizable align="center">
           <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
             sector
           </HeaderCell>
           <Cell dataKey="sector" />
         </Column>
 
-        <Column width={250} sortable resizable align="center">
+        <Column width={150} sortable resizable align="center">
           <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
             fechaRegistrado
           </HeaderCell>
@@ -138,60 +147,93 @@ const TablePersonas = ({ data }) => {
         </Column>
 
         {localStorage.getItem("idRolUsuario") === "ADMIN" && (
-          <Column width={230} fixed="right" align="center">
-            <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
-              ACCIONES
-            </HeaderCell>
-            <Cell style={{ padding: "6px", textAlign: "center" }}>
-              {(rowData) => (
-                <>
-                  <Button
-                    size="sm"
-                    color="cyan"
-                    disabled={rowData.TOTAL_SUBTAREAS > 0}
-                    appearance="primary"
-                    onClick={() => ActualizarDatos(rowData)}
-                  >
-                    Editar
-                  </Button>
-                  {"   | "}
-                  <Button
-                    size="sm"
-                    color="red"
-                    appearance="primary"
-                    onClick={() => {
-                      // console.log(rowData)
-                      Swal.fire({
-                        title: "¿Está seguro de eliminar este registro?",
-                        texrt: "Esta acción no se puede deshacer",
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#28a745",
-                        cancelButtonColor: "#dc3545",
-                        confirmButtonText: "Sí, eliminar",
-                        cancelButtonText: "Cancelar",
-                        reverseButtons: true,
-                      }).then((result) => {
-                        if (result.isConfirmed) {
-                          deleteMutation.mutateAsync(rowData?.idPersona);
-                        } else if (
-                          result.dismiss === Swal.DismissReason.cancel
-                        ) {
-                          Swal.fire(
-                            "Cancelado",
-                            "El registro está seguro 🗃",
-                            "error"
-                          );
-                        }
-                      });
-                    }}
-                  >
-                    Eliminar
-                  </Button>
-                </>
-              )}
-            </Cell>
-          </Column>
+          <>
+            <Column width={200} fixed="right" align="center">
+              <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
+                ACCIONES
+              </HeaderCell>
+              <Cell style={{ padding: "6px", textAlign: "center" }}>
+                {(rowData) => (
+                  <>
+                    <Button
+                      size="sm"
+                      color="cyan"
+                      disabled={rowData.TOTAL_SUBTAREAS > 0}
+                      appearance="primary"
+                      onClick={() => ActualizarDatos(rowData)}
+                    >
+                      EDITAR
+                    </Button>
+                    {"   | "}
+                    <Button
+                      size="sm"
+                      color="red"
+                      appearance="primary"
+                      onClick={() => {
+                        // console.log(rowData)
+                        Swal.fire({
+                          title: "¿Está seguro de eliminar este registro?",
+                          texrt: "Esta acción no se puede deshacer",
+                          icon: "warning",
+                          showCancelButton: true,
+                          confirmButtonColor: "#28a745",
+                          cancelButtonColor: "#dc3545",
+                          confirmButtonText: "Sí, eliminar",
+                          cancelButtonText: "Cancelar",
+                          reverseButtons: true,
+                        }).then((result) => {
+                          if (result.isConfirmed) {
+                            deleteMutation.mutateAsync(rowData?.idPersona);
+                          } else if (
+                            result.dismiss === Swal.DismissReason.cancel
+                          ) {
+                            Swal.fire(
+                              "Cancelado",
+                              "El registro está seguro 🗃",
+                              "error"
+                            );
+                          }
+                        });
+                      }}
+                    >
+                      ELIMINAR
+                    </Button>
+                  </>
+                )}
+              </Cell>
+            </Column>
+
+            <Column width={200} fixed="right" align="center">
+              <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
+                PENDIENTES
+              </HeaderCell>
+              <Cell style={{ padding: "6px", textAlign: "center" }}>
+                {(rowData) => (
+                  <>
+                    <Button
+                      size="sm"
+                      color="green"
+                      disabled={rowData.TOTAL_SUBTAREAS > 0}
+                      appearance="primary"
+                      onClick={() => reporteAsistencia(rowData)}
+                    >
+                      ASISTENCIA
+                    </Button>
+                    {"   | "}
+                    <Button
+                      size="sm"
+                      color="orange"
+                      disabled={rowData.TOTAL_SUBTAREAS > 0}
+                      appearance="primary"
+                      onClick={() => reporteActividadPago(rowData)}
+                    >
+                      PAGOS
+                    </Button>
+                  </>
+                )}
+              </Cell>
+            </Column>
+          </>
         )}
       </Table>
 

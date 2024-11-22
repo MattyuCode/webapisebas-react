@@ -83,7 +83,7 @@ const ActividadAsistencia = () => {
                 </button>
               </div>
 
-              <div className="">
+              {/* <div className="">
                 <button
                   onClick={reporteActividadAsistencia}
                   className="btn btnCrea btn-success text-decoration-none"
@@ -91,7 +91,7 @@ const ActividadAsistencia = () => {
                 >
                   REPORTE ACTIVIDAD
                 </button>
-              </div>
+              </div> */}
 
               <div className="">
                 <FormControl

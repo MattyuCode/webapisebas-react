@@ -4,6 +4,7 @@ import { ModelContext } from "../../Context/ModelContext";
 import { UseMetods } from "../../Utilities/UseMetods";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const TableActividadPago = ({ data }) => {
   const { Column, HeaderCell, Cell } = Table;
@@ -15,6 +16,7 @@ const TableActividadPago = ({ data }) => {
   const { setUpDatos, setIsEdit } = useContext(ModelContext);
   const queryClient = useQueryClient();
   const { deleteAP } = UseMetods();
+  const navigate = useNavigate();
 
   const handleChangeLimit = (dataKey) => {
     setPage(1);
@@ -78,6 +80,9 @@ const TableActividadPago = ({ data }) => {
     },
   });
 
+  const reporteActividadPago = (data) =>
+    navigate(`/personas-sin-pago/${data?.idActividadPago}`);
+
   return (
     <div>
       <Table
@@ -119,7 +124,7 @@ const TableActividadPago = ({ data }) => {
           <Cell dataKey="cantidad" />
         </Column>
 
-        <Column width={230} fixed="right" align="center">
+        <Column width={300} fixed="right" align="center">
           <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
             ACCIONES
           </HeaderCell>
@@ -168,6 +173,16 @@ const TableActividadPago = ({ data }) => {
                   }}
                 >
                   Eliminar
+                </Button>
+                {"   | "}
+                <Button
+                  size="sm"
+                  color="green"
+                  disabled={rowData.TOTAL_SUBTAREAS > 0}
+                  appearance="primary"
+                  onClick={() => reporteActividadPago(rowData)}
+                >
+                  Reporte
                 </Button>
               </>
             )}

@@ -8,20 +8,17 @@ import Roles from "./components/pages/Roles/Roles";
 import Personas from "./components/pages/Personas/Personas";
 import Asistencia from "./components/pages/Asistencia/Asistencia";
 import Pagos from "./components/pages/Pagos/Pagos";
-import ActividadAsistencia from "./components/pages/ActividadAsistencia/ActividadAsistencia"
+import ActividadAsistencia from "./components/pages/ActividadAsistencia/ActividadAsistencia";
 import ActividadPago from "./components/pages/ActividadPago/ActividadPago";
 import PersonasSinAsistencia from "./components/pages/PersonaSinAsistencia/PersonaSinsAsistencia";
 import PersonaSinPago from "./components/pages/PersonaSinPago/PersonaSinPago";
-
-
-
 
 import NotFound from "./components/NotFound/NotFound";
 import Home from "./components/pages/Home/Home";
 import { UseTypeUser } from "./components/Context/UseTypeUser";
 import { ModelProvider } from "./components/Context/ModelContext";
 import PersonasConActividadPendiente from "./components/pages/Personas/PersonasConActividadPendiente";
-import PersonaConActividadPagoPendiente from "./components/pages/Personas/PersonaConActividadPagoPendiente";
+import { PersonaConActividadPagoPendiente } from "./components/pages/Personas/PersonaConActividadPagoPendiente";
 
 function App() {
   return (
@@ -38,13 +35,28 @@ function App() {
                 <Route path="/personas" element={<Personas />} />
                 <Route path="/asistencia" element={<Asistencia />} />
                 <Route path="/pagos" element={<Pagos />} />
-                <Route path="/actividadAsistencia" element={<ActividadAsistencia/>} />
-                <Route path="/actividadPago" element={<ActividadPago/>} />
+                <Route
+                  path="/actividadAsistencia"
+                  element={<ActividadAsistencia />}
+                />
+                <Route path="/actividadPago" element={<ActividadPago />} />
 
-                <Route path="/personas-sin-asistencia" element={<PersonasSinAsistencia />} />
-                <Route path="/personas-sin-pago" element={<PersonaSinPago/>} />
-                <Route path="/personaConActividad" element={<PersonasConActividadPendiente/>} />
-                <Route path="/personaConActividadPagoPendiente" element={<PersonaConActividadPagoPendiente/>} />
+                <Route
+                  path="/personas-sin-asistencia/:idActividadAsistencia"
+                  element={<PersonasSinAsistencia />}
+                />
+                <Route
+                  path="/personas-sin-pago/:idActividadPago"
+                  element={<PersonaSinPago />}
+                />
+                <Route
+                  path="/personaConActividad/:idPersona"
+                  element={<PersonasConActividadPendiente />}
+                />
+                <Route
+                  path="/personaConActividadPagoPendiente/:idPersona"
+                  element={<PersonaConActividadPagoPendiente />}
+                />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

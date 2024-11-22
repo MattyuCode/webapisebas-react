@@ -4,9 +4,13 @@ import { Table, FormControl, Button, Spinner } from "react-bootstrap";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UseMetods } from "../../Utilities/UseMetods";
 import { useDebounce } from "../../Hooks/useDebounce";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { FaArrowLeft } from "react-icons/fa6";
+import { MdSimCardDownload } from "react-icons/md";
+import { PdfGenerate2 } from "../../Utilities/PdfGenerate2";
 
 const PersonaSinPago = () => {
+  const { idActividadPago } = useParams();
   const API_Services = import.meta.env.VITE_APP_MY_API;
   const [idTipoPago, setIdTipoPago] = useState([]);
   const [personaSinPago, setPersonaSinPago] = useState([]);
@@ -19,9 +23,9 @@ const PersonaSinPago = () => {
   const debounceBuscar = useDebounce(buscar, 500);
 
   const { data: datosP, isSuccess: SuccesRol } = useQuery({
-    queryKey: ["GetAllSinPago", idTipoPago],
-    queryFn: () => GetAllSinPago(idTipoPago),
-    enabled: !!idTipoPago,
+    queryKey: ["GetAllSinPago", idActividadPago],
+    queryFn: () => GetAllSinPago(idActividadPago),
+    enabled: !!idActividadPago,
   });
 
   useEffect(() => {
@@ -34,61 +38,91 @@ const PersonaSinPago = () => {
 
   const handleGrupoChange = (e) => {
     const inputValue = e.target.value;
-    console.log("🚀 ~ handleGrupoChange ~ inputValue:", inputValue);
     setBuscar(inputValue);
   };
 
   const regresar = () => navigate("/actividadPago");
+  const generarReporte = () => {
+    const reporteData = {
+      idActividadPago: idActividadPago,
+      nombre_actividad: datosP?.data[0]?.nombre_actividad,
+      listaPersonas: datosP.data,
+    };
+
+    PdfGenerate2({ data: reporteData });
+  };
 
   return (
     <div className="container">
-      <h2>BUSCAR PAGOS CON PERSONAS PENDIENTES</h2>
       <div className="mb-3">
-        <FormControl
+        {/* <FormControl
           type="number"
           placeholder="Ingrese ID DE PAGO"
           value={buscar}
           onChange={handleGrupoChange}
-        />
+        /> */}
       </div>
 
       {loading && <Spinner animation="border" variant="primary" />}
 
       {error && <p className="text-danger">{error}</p>}
 
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>ID Persona</th>
-            <th>Nombre y Apellido</th>
-            <th>CANTIDAD</th>
-            <th>Nombre ACTIVIDAD PAGO</th>
-          </tr>
-        </thead>
-        <tbody>
-          {/* Si hay personas, las mostramos en la tabla */}
-          {datosP?.data.length > 0 ? (
-            datosP.data.map((persona) => (
-              <tr key={persona.id_persona}>
-                <td>{persona.id_persona}</td>
-                <td>{persona.nombre_apellido}</td>
-                <td>{persona.cantidad}</td>
-                <td>{persona.nombre_actividad}</td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="2" className="text-center">
-                No hay personas pendientes en este pago
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </Table>
+      <div>
+        <div className="container d-flex justify-content-around mb-3">
+          <button className="btn btn-danger" onClick={regresar}>
+            <FaArrowLeft />
+            &nbsp; Regresar
+          </button>
 
-      <button className="btn btn-danger" onClick={regresar}>
-        Regresar
-      </button>
+          <button className="btn btn-success" onClick={generarReporte}>
+            <MdSimCardDownload /> &nbsp; Descargar Reporte
+          </button>
+        </div>
+
+        <div
+          className="container"
+          style={{ padding: "25px", background: "white", borderRadius: "15px" }}
+        >
+          <h4 className="text-center">
+            Reporte de personas con pagos pendientes con el ID {idActividadPago}
+          </h4>
+
+          <h4
+            className="text-center mb-3"
+            style={{ background: "#3d3d3d", color: "white" }}
+          >
+            {datosP?.data[0]?.nombre_actividad}
+          </h4>
+
+          <table className="table table-hover ">
+            <thead>
+              <tr className="table-primary">
+                <th>ID Persona</th>
+                <th>Nombre y Apellido</th>
+                <th>CANTIDAD</th>
+              </tr>
+            </thead>
+            <tbody>
+              {/* Si hay personas, las mostramos en la tabla */}
+              {datosP?.data.length > 0 ? (
+                datosP.data.map((persona) => (
+                  <tr key={persona.id_persona}>
+                    <td>{persona.id_persona}</td>
+                    <td>{persona.nombre_apellido}</td>
+                    <td>{persona.cantidad}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="2" className="text-center">
+                    No hay personas pendientes en este pago
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 };

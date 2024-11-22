@@ -1,7 +1,6 @@
 import { FormControl } from "react-bootstrap";
 import { useContext, useEffect, useState } from "react";
-import Modal from "../../Utilities/Modals";
-import { useNavigate } from "react-router-dom";
+import Modal from "../../Utilities/Modals"; 
 import { useQuery } from "@tanstack/react-query";
 import TableActividadPago from "./TableActividadPago";
 import { ModalAP } from "./ModalAP";
@@ -12,7 +11,6 @@ const ActividadPago = () => {
   const { setIsEdit, IsEdit } = useContext(ModelContext);
   const [open, setOpen] = useState(false);
   const [size, setSize] = useState(false);
-  const navigate = useNavigate();
   const [allDatos, setAllDatos] = useState([]);
 
   const { GetAllActividadPago } = UseMetods();
@@ -40,10 +38,6 @@ const ActividadPago = () => {
   const handleOpen = (value) => {
     setSize(value);
     setOpen(true);
-  };
-
-  const reporteActividadPago = () => {
-    navigate("/personas-sin-pago");
   };
 
   const handleFilter = (e) => {
@@ -80,13 +74,13 @@ const ActividadPago = () => {
               </div>
 
               <div className="">
-                <button
+                {/* <button
                   onClick={reporteActividadPago}
                   className="btn btnCrea btn-success text-decoration-none"
                   style={{ width: "100%" }}
                 >
                   REPORTE ACTIVIDAD PAGO
-                </button>
+                </button> */}
               </div>
 
               <div className="">

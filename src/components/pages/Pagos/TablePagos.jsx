@@ -125,7 +125,7 @@ const TablePagos = ({ data }) => {
           </HeaderCell>
           <Cell>{(rowData) => rowData.idPersona?.nombreApellido}</Cell>
         </Column>
-
+ 
         <Column width={250} sortable resizable align="center">
           <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
             nombreActividad

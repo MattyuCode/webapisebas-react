@@ -4,6 +4,8 @@ import Swal from "sweetalert2";
 import { UseMetods } from "../../Utilities/UseMetods";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ModelContext } from "../../Context/ModelContext";
+import { useNavigate } from "react-router-dom";
+import PersonasSinAsistencia from "../PersonaSinAsistencia/PersonaSinsAsistencia";
 
 const TableActividadAsistencia = ({ data }) => {
   const { Column, HeaderCell, Cell } = Table;
@@ -17,6 +19,7 @@ const TableActividadAsistencia = ({ data }) => {
   const { deleteAcAsis } = UseMetods();
   const queryClient = useQueryClient();
   const { setUpDatos, IsEdit, setIsEdit } = useContext(ModelContext);
+  const navigate = useNavigate();
   const handleOpen = (value) => {
     setSize(value);
     setOpen(true);
@@ -84,6 +87,9 @@ const TableActividadAsistencia = ({ data }) => {
 
   const listaDatas = getData();
 
+  const irReporte = (data) =>
+    navigate(`/personas-sin-asistencia/${data?.idActividadAsistencia}`);
+
   return (
     <div>
       <Table
@@ -112,14 +118,14 @@ const TableActividadAsistencia = ({ data }) => {
           </HeaderCell>
           <Cell dataKey="idActividadAsistencia" />
         </Column>
-        <Column width={300} sortable resizable>
+        <Column width={400} sortable resizable>
           <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
             nombreActividad
           </HeaderCell>
           <Cell dataKey="nombreActividad" />
         </Column>
 
-        <Column width={450} fixed="right" align="center">
+        <Column width={300} fixed="right" align="center">
           <HeaderCell style={{ background: "#d9d9d9", color: "black" }}>
             ACCIONES
           </HeaderCell>
@@ -169,6 +175,16 @@ const TableActividadAsistencia = ({ data }) => {
                   }}
                 >
                   Eliminar
+                </Button>{" "}
+                &nbsp;
+                <Button
+                  size="sm"
+                  color="green"
+                  disabled={rowData.TOTAL_SUBTAREAS > 0}
+                  appearance="primary"
+                  onClick={() => irReporte(rowData)}
+                >
+                  Reporte
                 </Button>
               </>
             )}

@@ -81,23 +81,23 @@ const Personas = () => {
                   )}
                 </div>
                 <div className="">
-                  <button
+                  {/* <button
                     onClick={verPersona}
                     className="btn btnCrea btn-success text-decoration-none"
                     style={{ width: "100%" }}
                   >
                     Personas con asistencia pendiente
-                  </button>
+                  </button> */}
                 </div>
 
                 <div className="">
-                  <button
+                  {/* <button
                     onClick={verPersonConPago}
                     className="btn btnCrea btn-success text-decoration-none"
                     style={{ width: "100%" }}
                   >
                     Personas con pagos pendiente
-                  </button>
+                  </button> */}
                 </div>
                 <div className="">
                   <FormControl
