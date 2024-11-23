@@ -60,7 +60,7 @@ const Login = () => {
   return (
     <section className="sect">
       <div className="formu">
-        <h2 className="card-title text-center mb-4">Iniciar Sesión</h2>
+        <h2 className="card-title text-center mb-4">Login</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label htmlFor="email" className="form-label">

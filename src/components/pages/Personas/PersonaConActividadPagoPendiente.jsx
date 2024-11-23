@@ -7,6 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { MdSimCardDownload } from "react-icons/md";
 import { FaArrowLeft } from "react-icons/fa6";
 import { PdfPagoActividad } from "../../Utilities/PdfPagoActividad";
+import { InfinitySpin } from "react-loader-spinner";
 
 export const PersonaConActividadPagoPendiente = () => {
   const { idPersona } = useParams();
@@ -52,76 +53,78 @@ export const PersonaConActividadPagoPendiente = () => {
 
   return (
     <div className="container">
-      <div className="mb-3">
-        {/* <FormControl
-          type="number"
-          placeholder="Ingrese ID PERSONA"
-          value={buscar}
-          onChange={handleGrupoChange}
-        /> */}
-      </div>
-
-      {isLoading && <Spinner animation="border" variant="primary" />}
-
-      {isError && <p className="text-danger">{isError}</p>}
-
-      <div>
-        <div className="container d-flex justify-content-around mb-3">
-          <button className="btn btn-danger" onClick={regresar}>
-            <FaArrowLeft />
-            &nbsp; Regresar
-          </button>
-
-          <button className="btn btn-success" onClick={generarReporte}>
-            <MdSimCardDownload /> &nbsp; Descargar Reporte
-          </button>
+      {isLoading ? (
+        <div className="d-flex justify-content-center">
+          <div className="bg-white rounded w-75 p-5 d-flex justify-content-center">
+            <InfinitySpin
+              visible={true}
+              width="200"
+              color="#4fa94d"
+              ariaLabel="infinity-spin-loading"
+            />
+          </div>
         </div>
+      ) : (
+        <div>
+          <div className="container d-flex justify-content-around mb-3">
+            <button className="btn btn-danger" onClick={regresar}>
+              <FaArrowLeft />
+              &nbsp; Regresar
+            </button>
 
-        <div
-          className="container"
-          style={{ padding: "25px", background: "white", borderRadius: "15px" }}
-        >
-          <h4 className="text-center">
-            Reporte de personas con Pagos pendientes con el ID {idPersona}
-          </h4>
+            <button className="btn btn-success" onClick={generarReporte}>
+              <MdSimCardDownload /> &nbsp; Descargar Reporte
+            </button>
+          </div>
 
-          <h4
-            className="text-center mb-3"
-            style={{ background: "#3d3d3d", color: "white" }}
+          <div
+            className="container"
+            style={{
+              padding: "25px",
+              background: "white",
+              borderRadius: "15px",
+            }}
           >
-            {f()}
-          </h4>
+            <h4 className="text-center">
+              Reporte de personas con Pagos pendientes con el ID {idPersona}
+            </h4>
 
-          <table className="table table-hover ">
-            <thead>
-              <tr className="table-primary">
-                <th>ID Activdad</th>
-                <th>Nombre ACTIVIDAD PAGO</th>
-                <th>CANTIDAD</th>
-              </tr>
-            </thead>
-            <tbody>
-              {datos?.length > 0 ? (
-                datos.map((persona, i) => (
-                  <tr key={i}>
-                    <td>{persona.idActividadPago}</td>
-                    <td>{persona.nombreActividad}</td>
-                    <td>{persona.cantidad}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="2" className="text-center">
-                    No hay personas pendientes en este pago
-                  </td>
+            <h4
+              className="text-center mb-3"
+              style={{ background: "#3d3d3d", color: "white" }}
+            >
+              {f()}
+            </h4>
+
+            <table className="table table-hover ">
+              <thead>
+                <tr className="table-primary">
+                  <th>ID Activdad</th>
+                  <th>Nombre ACTIVIDAD PAGO</th>
+                  <th>CANTIDAD</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {datos?.length > 0 ? (
+                  datos.map((persona, i) => (
+                    <tr key={i}>
+                      <td>{persona.idActividadPago}</td>
+                      <td>{persona.nombreActividad}</td>
+                      <td>{persona.cantidad}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="2" className="text-center">
+                      No hay personas pendientes en este pago
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
-
- 

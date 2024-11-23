@@ -139,6 +139,7 @@ const Usuario = () => {
 
   const fn = (data) => {
     const rolEncontrado = datos?.find((d) => d.idRol == data.idRol);
+    console.log("🚀 ~ fn ~ rolEncontrado:", rolEncontrado?.nombreRol);
     return rolEncontrado?.nombreRol;
   };
 
@@ -248,7 +249,7 @@ const Usuario = () => {
                           ? nombreRol
                           : rowData.idRol === "ADMIN"
                           ? "ADMIN"
-                          : rowData.idRol}
+                          : "N/D"}
                       </span>
                     );
                   }}
@@ -271,7 +272,6 @@ const Usuario = () => {
                       >
                         Editar
                       </Button>
-                      {"   | "}
                       {/* <Button
                         size="sm"
                         color="red"
