@@ -48,7 +48,7 @@ export const PersonaConActividadPagoPendiente = () => {
     PdfPagoActividad({ data: reporteData });
   };
 
-  const f = () => (isSuccess ? datos[0].nombreApellido : null);
+  const f = () => (isSuccess ? datos[0]?.nombreApellido : null);
 
   return (
     <div className="container">
